@@ -231,6 +231,17 @@ html,body{height:100%}body{height:100%;background:#0a0f1e;color:#e2e8f0;font-fam
 .tg-input{width:100%;background:#111827;border:1px solid #2d3f55;border-radius:9px;padding:10px 12px;color:#e2e8f0;font-size:13px;outline:none;margin-bottom:8px;box-sizing:border-box;font-family:inherit;resize:none}
 .tg-send-row{display:flex;gap:8px;flex-wrap:wrap}
 
+/* YUZ KAMERA */
+.face-modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.face-modal-wrap.hide{display:none}
+.face-video{border-radius:16px;overflow:hidden;position:relative;width:100%;max-width:400px}
+.face-video video{width:100%;border-radius:16px;display:block}
+.face-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.face-circle{width:200px;height:200px;border-radius:50%;border:3px solid #3b82f6;box-shadow:0 0 0 2000px rgba(0,0,0,.5)}
+.face-btns{display:flex;gap:12px;margin-top:16px;width:100%;max-width:400px}
+.face-status{color:#e2e8f0;font-size:13px;text-align:center;margin-top:10px}
+.face-thumb{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #3b82f6}
+
 /* XONALAR */
 .xona-grid{display:flex;flex-direction:column;gap:12px}
 .xona-card{background:#1e293b;border:1px solid #2d3f55;border-radius:14px;overflow:hidden}
@@ -458,6 +469,21 @@ html,body{height:100%}body{height:100%;background:#0a0f1e;color:#e2e8f0;font-fam
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- YUZ KAMERA MODAL -->
+<div class="face-modal-wrap hide" id="face-modal">
+  <div style="color:#e2e8f0;font-size:16px;font-weight:700;margin-bottom:14px;text-align:center" id="face-modal-title">📷 Yuz qo'shish</div>
+  <div class="face-video">
+    <video id="face-video" autoplay playsinline></video>
+    <div class="face-overlay"><div class="face-circle"></div></div>
+  </div>
+  <div class="face-status" id="face-status">Yuzingizni doira ichiga joylashtiring</div>
+  <canvas id="face-canvas" style="display:none"></canvas>
+  <div class="face-btns">
+    <button class="btn btn-gray" style="flex:1" onclick="closeFaceModal()">❌ Bekor</button>
+    <button class="btn btn-blue" style="flex:1" onclick="captureFace()">📸 Rasm olish</button>
+  </div>
+</div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -806,7 +832,8 @@ function renderGuruhIchki(){
           <div class="irow"><span class="ikey">Yoshi</span><span>${s.age||'—'}</span></div>
           <div class="irow"><span class="ikey">Ustoz</span><span>${s.teacher||'—'}</span></div>
           <div class="irow"><span class="ikey">Oylik</span><span>${s.fee?s.fee.toLocaleString()+' so\'m':'—'}</span></div>
-          ${isAdmin()?`<div class="btn-row"><button class="btn btn-purple" onclick="event.stopPropagation();editS('${s.id}')">✏️ Tahrirlash</button><button class="btn btn-red" onclick="event.stopPropagation();delS('${s.id}')">🗑️</button></div>`:''}
+          <div class="irow"><span class="ikey">Yuzi</span><span>${s.faceImage?'✅ Qo\'shilgan':'❌ Yo\'q'}</span></div>
+          ${isAdmin()?`<div class="btn-row"><button class="btn btn-purple" onclick="event.stopPropagation();editS('${s.id}')">✏️ Tahrirlash</button><button class="btn btn-red" onclick="event.stopPropagation();delS('${s.id}')">🗑️</button></div><button class="btn btn-blue btn-block" style="margin-top:6px" onclick="event.stopPropagation();openFaceModal('${s.id}','${s.name.replace(/'/g,'')}')">📷 ${s.faceImage?'Yuzni yangilash':'Yuz qo\'shish'}</button>`:''}
         </div>
       </div></div>`;
     });
@@ -1530,6 +1557,56 @@ window.convertToStudent=async function(lid){
 window.closeModal=id=>document.getElementById(id).classList.add('hide');
 document.querySelectorAll('.overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.add('hide');}));
 document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ════════════════════════════════════════
+// ── YUZ QO'SHISH ──
+// ════════════════════════════════════════
+let faceStream=null, faceSid=null;
+
+window.openFaceModal=async function(sid, sname){
+  faceSid=sid;
+  document.getElementById('face-modal-title').textContent=`📷 ${sname} — Yuz qo'shish`;
+  document.getElementById('face-status').textContent='Kamera ochilmoqda...';
+  document.getElementById('face-modal').classList.remove('hide');
+  try{
+    faceStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:640,height:480}});
+    document.getElementById('face-video').srcObject=faceStream;
+    document.getElementById('face-status').textContent='Yuzingizni doira ichiga joylashtiring';
+  }catch(e){
+    document.getElementById('face-status').textContent='❌ Kamera ochilmadi: '+e.message;
+  }
+};
+
+window.closeFaceModal=function(){
+  if(faceStream){faceStream.getTracks().forEach(t=>t.stop());faceStream=null;}
+  document.getElementById('face-modal').classList.add('hide');
+  faceSid=null;
+};
+
+window.captureFace=async function(){
+  if(!faceSid){toast('❗ Xatolik!');return;}
+  const video=document.getElementById('face-video');
+  const canvas=document.getElementById('face-canvas');
+  canvas.width=320;canvas.height=320;
+  const ctx=canvas.getContext('2d');
+  // Markazdan kvadrat kesib olish
+  const vw=video.videoWidth,vh=video.videoHeight;
+  const size=Math.min(vw,vh);
+  const sx=(vw-size)/2,sy=(vh-size)/2;
+  ctx.drawImage(video,sx,sy,size,size,0,0,320,320);
+  const base64=canvas.toDataURL('image/jpeg',0.8).split(',')[1];
+  document.getElementById('face-status').textContent='⏳ Saqlanmoqda...';
+  try{
+    await updateDoc(doc(db,'students',faceSid),{faceImage:base64});
+    const i=students.findIndex(s=>s.id===faceSid);
+    if(i>-1)students[i].faceImage=base64;
+    toast('✅ Yuz saqlandi!');
+    closeFaceModal();
+    render();
+  }catch(e){
+    document.getElementById('face-status').textContent='❌ Xatolik: '+e.message;
+  }
+};
 
 let tt;
 window.toast=msg=>{const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),2500);};
