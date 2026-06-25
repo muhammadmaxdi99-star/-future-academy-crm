@@ -479,6 +479,33 @@ html,body{height:100%}body{height:100%;background:#0a0f1e;color:#e2e8f0;font-fam
     <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('subxona-modal')">Bekor</button><button class="btn btn-blue" onclick="saveSubXona()">💾 Saqlash</button></div>
   </div>
 </div>
+
+<!-- DARS (JADVAL) TAHRIRLASH MODAL — haftalik jadvaldagi katakni bosganda ochiladi -->
+<div class="overlay hide" id="jx-modal">
+  <div class="modal">
+    <div class="mhead"><h2 id="jx-title">✏️ Darsni tahrirlash</h2><button class="nbtn" onclick="closeModal('jx-modal')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Guruh</div><select class="fselect" id="jx-guruh"><option value="">— Tanlang —</option></select></div>
+      <div class="fgrow"><div class="flbl">Xona</div><select class="fselect" id="jx-xona"><option value="">— Tanlanmagan —</option></select></div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Boshlanish</div><input class="finput" id="jx-bosh" type="time" value="09:00"></div>
+        <div class="fgrow"><div class="flbl">Tugash</div><input class="finput" id="jx-tug" type="time" value="11:00"></div>
+      </div>
+      <div class="fgrow"><div class="flbl">Dars kunlari</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="jx-kunlar">
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Du"> Dush</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Se"> Sesh</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ch"> Chor</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Pa"> Pay</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ju"> Juma</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Sh"> Shan</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ya"> Yak</label>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-red" onclick="deleteJX()">🗑️ O'chirish</button><button class="btn btn-gray" onclick="closeModal('jx-modal')">Bekor</button><button class="btn btn-blue" onclick="saveJX()">💾 Saqlash</button></div>
+  </div>
+</div>
 <div class="overlay hide" id="xm">
   <div class="modal">
     <div class="mhead"><h2 id="xm-title">👤 Yangi xodim</h2><button class="nbtn" onclick="closeModal('xm')">✕</button></div>
@@ -546,7 +573,7 @@ html,body{height:100%}body{height:100%;background:#0a0f1e;color:#e2e8f0;font-fam
 <!-- JADVAL MODAL -->
 <div class="overlay hide" id="jadval-modal">
   <div class="modal">
-    <div class="mhead"><h2>📅 Dars jadvali qo'shish</h2><button class="nbtn" onclick="closeModal('jadval-modal')">✕</button></div>
+    <div class="mhead"><h2 id="jd-title">📅 Dars jadvali qo'shish</h2><button class="nbtn" onclick="closeModal('jadval-modal')">✕</button></div>
     <div class="mbody">
       <div class="fgrow"><div class="flbl">Guruh *</div><select class="fselect" id="jd-guruh"></select></div>
       <div class="fgrow"><div class="flbl">Xona *</div><select class="fselect" id="jd-xona"></select></div>
@@ -566,7 +593,11 @@ html,body{height:100%}body{height:100%;background:#0a0f1e;color:#e2e8f0;font-fam
         <div class="fgrow"><div class="flbl">Tugash *</div><input class="finput" id="jd-tug" type="time" value="11:00"></div>
       </div>
     </div>
-    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('jadval-modal')">Bekor</button><button class="btn btn-blue" onclick="saveJadval()">💾 Saqlash</button></div>
+    <div class="mfoot">
+      <button class="btn btn-gray" onclick="closeModal('jadval-modal')">Bekor</button>
+      <button class="btn btn-red hide" id="jd-del-btn" onclick="delJadvalFromModal()">🗑️</button>
+      <button class="btn btn-blue" onclick="saveJadval()">💾 Saqlash</button>
+    </div>
   </div>
 </div>
 
@@ -1312,6 +1343,67 @@ window.openSubXona=function(pinId){
   document.querySelectorAll('#sx-kunlar input').forEach(c=>{c.checked=kunlar.includes(c.value);});
   document.getElementById('subxona-modal').classList.remove('hide');
 };
+function fillJxXonaSelect(selectedXonaId){
+  const xs=document.getElementById('jx-xona');
+  xs.innerHTML='<option value="">— Tanlanmagan —</option>';
+  xonalar.forEach(x=>xs.innerHTML+=`<option value="${x.id}|${x.nom}">${x.nom}</option>`);
+  if(selectedXonaId){const opt=Array.from(xs.options).find(o=>o.value.split('|')[0]===selectedXonaId);if(opt)xs.value=opt.value;}
+}
+function fillJxGuruhSelect(selectedGid){
+  const gs=document.getElementById('jx-guruh');
+  gs.innerHTML='<option value="">— Tanlang —</option>';
+  groups.forEach(g=>gs.innerHTML+=`<option value="${g.id}|${g.name}">${g.name}</option>`);
+  if(selectedGid){const opt=Array.from(gs.options).find(o=>o.value.split('|')[0]===selectedGid);if(opt)gs.value=opt.value;}
+}
+let curJX=null;
+window.openJX=function(jid,xonaId,dayKey,hour){
+  if(!isAdmin())return;
+  const existing=jid?jadvallar.find(j=>j.id===jid):null;
+  curJX={editId:existing?existing.id:null};
+  document.getElementById('jx-title').textContent=existing?'✏️ Darsni tahrirlash':"➕ Yangi dars qo'shish";
+  fillJxGuruhSelect(existing?existing.guruhId:null);
+  fillJxXonaSelect(existing?existing.xonaId:xonaId);
+  document.getElementById('jx-bosh').value=existing?existing.boshlanish:(hour!=null?String(hour).padStart(2,'0')+':00':'09:00');
+  document.getElementById('jx-tug').value=existing?existing.tugash:(hour!=null?String(Math.min(hour+2,23)).padStart(2,'0')+':00':'11:00');
+  const kunlar=existing?(existing.kunlar||[]):(dayKey?[dayKey]:['Du','Se','Ch','Pa','Ju']);
+  document.querySelectorAll('#jx-kunlar input').forEach(c=>{c.checked=kunlar.includes(c.value);});
+  document.getElementById('jx-modal').classList.remove('hide');
+};
+window.saveJX=async function(){
+  const gVal=document.getElementById('jx-guruh').value;
+  if(!gVal){toast('❗ Guruhni tanlang');return;}
+  const[guruhId,guruhNom]=gVal.split('|');
+  const xVal=document.getElementById('jx-xona').value;
+  if(!xVal){toast('❗ Xonani tanlang');return;}
+  const[xonaId,xonaNom]=xVal.split('|');
+  const bosh=document.getElementById('jx-bosh').value;
+  const tug=document.getElementById('jx-tug').value;
+  const kunlar=Array.from(document.querySelectorAll('#jx-kunlar input:checked')).map(c=>c.value);
+  if(!kunlar.length){toast('❗ Kamida bitta kun tanlang');return;}
+  const jData={guruhId,guruhNom,xonaId,xonaNom,kunlar,boshlanish:bosh,tugash:tug};
+  try{
+    if(curJX&&curJX.editId){
+      await updateDoc(doc(db,'jadval',curJX.editId),jData);
+      const i=jadvallar.findIndex(j=>j.id===curJX.editId);if(i>-1)jadvallar[i]={...jadvallar[i],...jData};
+      toast('✅ Yangilandi');
+    } else {
+      const r=await addDoc(collection(db,'jadval'),jData);
+      jadvallar.push({id:r.id,...jData});
+      toast("✅ Qo'shildi");
+    }
+    closeModal('jx-modal');renderXona();
+  }catch(e){toast('❗ '+e.message);}
+};
+window.deleteJX=async function(){
+  if(!curJX||!curJX.editId){closeModal('jx-modal');return;}
+  if(!confirm("Bu darsni o'chirishni tasdiqlaysizmi?"))return;
+  try{
+    await deleteDoc(doc(db,'jadval',curJX.editId));
+    jadvallar=jadvallar.filter(j=>j.id!==curJX.editId);
+    toast("🗑️ O'chirildi");
+    closeModal('jx-modal');renderXona();
+  }catch(e){toast('❗ '+e.message);}
+};
 window.saveSubXona=async function(){
   if(!curSubPin)return;
   const xVal=document.getElementById('sx-xona').value;
@@ -1456,7 +1548,10 @@ window.delX=async function(id){
 
 // XONALAR
 let xonaViewMode='kun';
+let xonaSelectedDay=null; // null = bugungi haqiqiy kun, aks holda 'Du'..'Ya'
 window.setXonaView=function(m){xonaViewMode=m;renderXona();};
+window.selectXonaDay=function(dk){xonaSelectedDay=dk;xonaViewMode='kun';renderXona();window.scrollTo({top:0,behavior:'smooth'});};
+window.resetXonaToday=function(){xonaSelectedDay=null;renderXona();};
 window.renderXona=async function(){
   if(!xonalar.length&&!jadvallar.length)await loadXonalar();
   const pg=document.getElementById('pg-xona');
@@ -1464,7 +1559,10 @@ window.renderXona=async function(){
   const kunlar_arr=['Ya','Du','Se','Ch','Pa','Ju','Sh'];
   const bugun=kunlar_arr[now.getDay()];
   const kunNomiLong=['Yakshanba','Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba'];
+  const kunNomiLongMap={Du:'Dushanba',Se:'Seshanba',Ch:'Chorshanba',Pa:'Payshanba',Ju:'Juma',Sh:'Shanba',Ya:'Yakshanba'};
   const haftaTartib=['Du','Se','Ch','Pa','Ju','Sh','Ya'];
+  const dispDay=xonaSelectedDay||bugun;
+  const isCustomDay=xonaSelectedDay&&xonaSelectedDay!==bugun;
 
   // Xonalarni raqam tartibida saralash (1,2,3,4... aralashmasin)
   const numOf=nom=>{const m=String(nom||'').match(/\d+/);return m?parseInt(m[0]):9999;};
@@ -1478,7 +1576,14 @@ window.renderXona=async function(){
       <button class="btn ${xonaViewMode==='hafta'?'btn-blue':'btn-gray'}" style="flex:1;font-size:12px;padding:8px" onclick="setXonaView('hafta')">🗓️ Haftalik</button>
     </div>`;
   if(xonaViewMode==='kun'){
-    h+=`<div style="font-size:13px;font-weight:700;color:#3b82f6;margin-bottom:10px">📊 Bugungi holat — ${kunNomiLong[now.getDay()]}, ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}</div>`;
+    if(isCustomDay){
+      h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:700;color:#3b82f6">📊 Holat — ${kunNomiLongMap[dispDay]}</div>
+        <button class="nbtn" style="font-size:11px;padding:4px 10px;background:#1e293b;border:1px solid #2d3f55;border-radius:8px;color:#94a3b8" onclick="resetXonaToday()">↺ Bugunga qaytish</button>
+      </div>`;
+    } else {
+      h+=`<div style="font-size:13px;font-weight:700;color:#3b82f6;margin-bottom:10px">📊 Bugungi holat — ${kunNomiLong[now.getDay()]}, ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}</div>`;
+    }
   } else {
     h+=`<div style="font-size:13px;font-weight:700;color:#3b82f6;margin-bottom:10px">🗓️ Haftalik holat</div>`;
   }
@@ -1490,10 +1595,10 @@ window.renderXona=async function(){
     const hours=[];
     for(let hh=startHour;hh<endHour;hh++)hours.push(hh);
 
-    // Har bir xona uchun shu kunga oid darslar
+    // Har bir xona uchun shu (tanlangan) kunga oid darslar
     const xonaJadvalBugun={};
     xonalarSorted.forEach(x=>{
-      xonaJadvalBugun[x.id]=jadvallar.filter(j=>j.xonaId===x.id&&Array.isArray(j.kunlar)&&j.kunlar.includes(bugun));
+      xonaJadvalBugun[x.id]=jadvallar.filter(j=>j.xonaId===x.id&&Array.isArray(j.kunlar)&&j.kunlar.includes(dispDay));
     });
 
     // Har bir (xona, soat) uchun band/bo'sh holatini hisoblash. Har soat 2 yarmga (0-30,30-60 daqiqa) bo'linadi
@@ -1535,9 +1640,6 @@ window.renderXona=async function(){
     </div>`;
   } else {
     // HAFTALIK KO'RINISH — har bir xona uchun to'liq yoyilgan kun x soat jadvali
-    if(!xonalarSorted.length){
-      // (bo'sh holat allaqachon yuqorida ko'rsatilgan)
-    }
     xonalarSorted.forEach(x=>{
       const lessons=jadvallar.filter(j=>j.xonaId===x.id);
       h+=`<div style="margin-bottom:18px">
@@ -1571,20 +1673,22 @@ window.renderXona=async function(){
       let thh=`<th class="xroom-h">Kun</th>`;
       hrs.forEach(hh=>thh+=`<th><span class="xtime-lbl">${hh}:00</span></th>`);
       let trs='';
+      const adm=isAdmin();
       haftaTartib.forEach(dk=>{
-        let row=`<tr><td class="xroom-c" style="${dk===bugun?'color:#3b82f6':''}">${KUN_NOMI[dk]}</td>`;
+        let row=`<tr><td class="xroom-c" style="${dk===bugun?'color:#3b82f6':'color:#7dd3fc'};cursor:pointer" onclick="selectXonaDay('${dk}')" title="${KUN_NOMI[dk]} kunining kunlik holatini ko'rish">${KUN_NOMI[dk]}</td>`;
         hrs.forEach(hh=>{
           const l1=getHalf(dk,hh,0);
           const l2=getHalf(dk,hh,1);
           const sameLesson=l1&&l2&&l1.id===l2.id;
+          const clk=adm?'style="cursor:pointer"':'';
           if(sameLesson){
-            row+=`<td><div class="dj-cell-content" style="background:rgba(239,68,68,.45)">
+            row+=`<td><div class="dj-cell-content" ${clk} style="background:rgba(239,68,68,.45)" onclick="event.stopPropagation();${adm?`openJX('${l1.id}','${x.id}','${dk}',${hh})`:''}">
               <div>${l1.guruhNom}${l1.subGroup?' ('+l1.subGroup+')':''}</div><div class="djtime">${l1.boshlanish}-${l1.tugash}</div>
             </div></td>`;
           } else {
             row+=`<td><div class="xcell">
-              <div class="xcell-half" style="background:${l1?'rgba(239,68,68,.45)':'rgba(34,197,94,.2)'};display:flex;align-items:center;justify-content:center">${l1?`<span style="font-size:7px;color:#fff;font-weight:700">${l1.guruhNom.slice(0,6)}</span>`:''}</div>
-              <div class="xcell-half" style="background:${l2?'rgba(239,68,68,.45)':'rgba(34,197,94,.2)'};display:flex;align-items:center;justify-content:center">${l2?`<span style="font-size:7px;color:#fff;font-weight:700">${l2.guruhNom.slice(0,6)}</span>`:''}</div>
+              <div class="xcell-half" ${clk} style="background:${l1?'rgba(239,68,68,.45)':'rgba(34,197,94,.2)'};display:flex;align-items:center;justify-content:center" onclick="event.stopPropagation();${adm?`openJX(${l1?`'${l1.id}'`:'null'},'${x.id}','${dk}',${hh})`:''}">${l1?`<span style="font-size:7px;color:#fff;font-weight:700">${l1.guruhNom.slice(0,6)}</span>`:''}</div>
+              <div class="xcell-half" ${clk} style="background:${l2?'rgba(239,68,68,.45)':'rgba(34,197,94,.2)'};display:flex;align-items:center;justify-content:center" onclick="event.stopPropagation();${adm?`openJX(${l2?`'${l2.id}'`:'null'},'${x.id}','${dk}',${hh})`:''}">${l2?`<span style="font-size:7px;color:#fff;font-weight:700">${l2.guruhNom.slice(0,6)}</span>`:''}</div>
             </div></td>`;
           }
         });
@@ -1598,7 +1702,8 @@ window.renderXona=async function(){
         <span><i style="background:rgba(34,197,94,.4)"></i>Bo'sh</span>
         <span><i style="background:rgba(239,68,68,.5)"></i>Band</span>
         <span style="color:#3b82f6">Bugun (kun nomi ko'k)</span>
-      </div>`;
+      </div>
+      <div style="font-size:11px;color:#64748b;text-align:center;margin-top:6px">💡 Kun nomini (Dush, Sesh...) bosib, o'sha kunning Kunlik dashboard'ini ko'rishingiz mumkin${isAdmin()?'. Katakchani bosib darsni tahrirlang.':''}</div>`;
     }
   }
   h+=`</div>`;
