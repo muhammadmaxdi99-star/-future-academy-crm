@@ -1,0 +1,3239 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Future Academy CRM</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}body{height:100%;background:#0a0f1e;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+
+/* LOGIN */
+#loginPage{position:fixed;inset:0;background:linear-gradient(135deg,#0a0f1e,#1a1f3e);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:1000}
+#loginPage.hide{display:none}
+.l-logo{font-size:52px;margin-bottom:8px}
+.l-title{font-size:26px;font-weight:800;margin-bottom:4px}
+.l-sub{font-size:13px;color:#64748b;margin-bottom:32px}
+.l-box{background:#1e293b;border:1px solid #2d3f55;border-radius:16px;padding:24px;width:100%;max-width:360px}
+.l-box h2{font-size:17px;font-weight:700;margin-bottom:18px;text-align:center}
+.linput{width:100%;background:#0a0f1e;border:1px solid #2d3f55;border-radius:10px;padding:12px 14px;color:#e2e8f0;font-size:15px;outline:none;margin-bottom:12px}
+.linput:focus{border-color:#3b82f6}
+.lbtn{width:100%;background:#3b82f6;border:none;border-radius:10px;padding:13px;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.lerr{color:#f87171;font-size:13px;text-align:center;margin-top:10px;min-height:20px}
+
+/* NAV */
+.nav{background:#111827;border-bottom:1px solid #1e2d40;padding:0 14px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.nav-left{display:flex;align-items:center;gap:10px}
+.back-btn{background:#1e293b;border:1px solid #2d3f55;border-radius:8px;color:#e2e8f0;padding:6px 12px;font-size:13px;cursor:pointer;font-weight:600;display:none}
+.nav-title{font-size:15px;font-weight:800}
+.nav-title span{color:#3b82f6}
+.nav-right{display:flex;align-items:center;gap:6px}
+.role-badge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(59,130,246,.2);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
+.role-badge.admin{background:rgba(245,158,11,.2);color:#fbbf24;border-color:rgba(245,158,11,.3)}
+.nbtn{background:#1e293b;border:1px solid #2d3f55;border-radius:8px;color:#e2e8f0;padding:6px 10px;font-size:12px;cursor:pointer;font-weight:600}
+
+/* FOLDER GRID */
+.tabs{display:none}
+.tab{display:none}
+.folder-home{flex:1;overflow-y:auto;padding:14px;background:#0a0f1e}
+.folder-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-bottom:20px}
+.folder-card{background:#1e293b;border:1px solid #2d3f55;border-radius:16px;padding:18px 14px 14px;cursor:pointer;position:relative;transition:transform .15s,box-shadow .15s;user-select:none}
+.folder-card:active{transform:scale(.96)}
+.folder-card.on{border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,.3)}
+.folder-icon{font-size:32px;margin-bottom:8px;display:block}
+.folder-name{font-size:13px;font-weight:700;color:#e2e8f0}
+.folder-sub{font-size:11px;color:#64748b;margin-top:3px}
+.folder-dot{width:9px;height:9px;border-radius:50%;position:absolute;top:10px;right:10px;display:none}
+.folder-dot.green{background:#4ade80;display:block;box-shadow:0 0 6px #4ade80}
+.folder-dot.red{background:#f87171;display:block;box-shadow:0 0 6px #f87171}
+.folder-dot.yellow{background:#fbbf24;display:block;box-shadow:0 0 6px #fbbf24}
+.folder-back{display:flex;align-items:center;gap:8px;padding:0 0 14px 0;cursor:pointer;color:#3b82f6;font-size:13px;font-weight:700}
+
+/* APP */
+#app{flex:1;overflow-y:auto;padding:14px;-webkit-overflow-scrolling:touch;min-height:0}
+.page{display:none}.page.on{display:block}
+
+/* GURUH KARTALAR */
+.grp-grid{display:flex;flex-direction:column;gap:12px}
+.grp-card{border-radius:14px;overflow:hidden;border:1px solid #2d3f55;cursor:pointer;transition:transform .15s}
+.grp-card:active{transform:scale(.98)}
+.grp-banner{padding:20px 18px;display:flex;align-items:center;justify-content:space-between}
+.grp-banner-left{display:flex;align-items:center;gap:14px}
+.grp-icon{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:22px}
+.grp-name{font-size:18px;font-weight:800}
+.grp-meta{font-size:12px;opacity:.8;margin-top:3px}
+.grp-stats{display:flex;gap:8px}
+.grp-stat{background:rgba(255,255,255,.15);border-radius:8px;padding:6px 12px;text-align:center}
+.grp-stat .n{font-size:18px;font-weight:800}
+.grp-stat .l{font-size:10px;opacity:.8}
+
+/* GURUH ICHKI */
+.grp-header{border-radius:14px;padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px}
+
+/* MONTH BAR */
+.mbar{background:#1e293b;border:1px solid #2d3f55;border-radius:11px;display:flex;align-items:center;margin-bottom:14px;overflow:hidden}
+.marr{background:none;border:none;color:#e2e8f0;font-size:18px;padding:10px 16px;cursor:pointer;flex-shrink:0}
+.mtitle{flex:1;text-align:center;font-size:15px;font-weight:700}
+
+/* STATS */
+.srow{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none;padding-bottom:2px}
+.srow::-webkit-scrollbar{display:none}
+.sbox{background:#1e293b;border:1px solid #2d3f55;border-radius:11px;padding:11px 14px;min-width:82px;text-align:center;flex-shrink:0}
+.snum{font-size:22px;font-weight:800}.slbl{font-size:10px;color:#64748b;margin-top:2px}
+
+/* INNER TABS */
+.inner-tabs{display:flex;background:#1e293b;border-radius:11px;overflow:hidden;border:1px solid #2d3f55;margin-bottom:14px}
+.inner-tab{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;transition:all .2s}
+.inner-tab.on{background:#3b82f6;color:#fff}
+
+/* STUDENT CARD */
+.card{background:#1e293b;border:1px solid #2d3f55;border-radius:12px;margin-bottom:9px;overflow:hidden}
+.card-head{padding:12px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.card-head:active{background:#243044}
+.ava{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.cinfo{flex:1;min-width:0}
+.cname{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.csub{font-size:11px;color:#64748b;margin-top:2px}
+.csub-phone{font-size:14px;font-weight:700;color:#94a3b8;margin-top:2px}
+.cright{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.pill{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.p-blue{background:rgba(59,130,246,.2);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
+.p-green{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.p-red{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.arr{color:#64748b;font-size:10px;transition:transform .2s}
+.arr.up{transform:rotate(180deg)}
+.card-body{display:none;border-top:1px solid #1e2d40}
+.card-body.on{display:block}
+.btabs{display:flex;border-bottom:1px solid #1e2d40}
+.btab{flex:1;padding:9px;text-align:center;font-size:12px;font-weight:600;color:#64748b;border-bottom:2px solid transparent;cursor:pointer}
+.btab.on{color:#3b82f6;border-bottom-color:#3b82f6}
+.bsec{padding:12px 13px;display:none}
+.bsec.on{display:block}
+
+/* DAYS */
+.dgrid{display:flex;flex-wrap:wrap;gap:5px}
+.dbtn{width:38px;height:38px;border-radius:7px;border:1px solid #2d3f55;background:#111827;color:#64748b;font-size:10px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;flex-shrink:0}
+.dbtn:active{opacity:.7}
+.dbtn .di{font-size:12px;line-height:1}
+.dbtn .dn{font-size:9px;line-height:1}
+.dbtn.k{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4);color:#4ade80}
+.dbtn.km{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.4);color:#f87171}
+
+.irow{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1e2d40;font-size:13px}
+.irow:last-child{border:none}
+.ikey{color:#64748b}
+.pbox{background:#111827;border:1px solid #2d3f55;border-radius:9px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.pval{font-size:18px;font-weight:800}
+
+/* BUTTONS */
+.btn{padding:9px 14px;border-radius:9px;border:none;font-size:13px;font-weight:700;cursor:pointer}
+.btn:active{opacity:.75}
+.btn-blue{background:#3b82f6;color:#fff}
+.btn-green{background:rgba(34,197,94,.2);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.btn-red{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.btn-purple{background:rgba(139,92,246,.2);color:#a78bfa;border:1px solid rgba(139,92,246,.3)}
+.btn-gray{background:#1e293b;color:#94a3b8;border:1px solid #2d3f55}
+.btn-block{width:100%;margin-top:7px}
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.btn-row .btn{flex:1}
+.tnote{width:100%;background:#111827;border:1px solid #2d3f55;border-radius:8px;padding:9px;color:#e2e8f0;font-size:13px;outline:none;resize:none;margin-top:8px;font-family:inherit}
+
+/* XODIM */
+.xcard{background:#1e293b;border:1px solid #2d3f55;border-radius:12px;padding:14px;margin-bottom:9px}
+
+/* REPORT */
+.rcard{background:#1e293b;border:1px solid #2d3f55;border-radius:12px;padding:14px;margin-bottom:10px}
+.rtitle{font-size:13px;font-weight:700;color:#3b82f6;margin-bottom:10px}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:999;padding:14px;backdrop-filter:blur(3px)}
+.overlay.hide{display:none}
+.modal{background:#111827;border:1px solid #2d3f55;border-radius:15px;width:100%;max-width:440px;max-height:88vh;overflow-y:auto}
+.mhead{padding:15px 18px;border-bottom:1px solid #1e2d40;display:flex;justify-content:space-between;align-items:center}
+.mhead h2{font-size:16px;font-weight:700}
+.mbody{padding:18px;display:flex;flex-direction:column;gap:11px}
+.mfoot{padding:14px 18px;border-top:1px solid #1e2d40;display:flex;gap:9px}
+.mfoot .btn{flex:1;padding:11px}
+.flbl{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.finput,.fselect{background:#1e293b;border:1px solid #2d3f55;border-radius:9px;padding:10px 12px;color:#e2e8f0;font-size:14px;outline:none;width:100%}
+.fselect option{background:#111827}
+.fgrow{display:flex;flex-direction:column}
+.f2{display:flex;gap:10px}.f2 .fgrow{flex:1}
+
+/* DASHBOARD TABLE */
+.dash-wrap{padding:0 0 20px}
+.dash-month-bar{background:#1e293b;border:1px solid #2d3f55;border-radius:11px;display:flex;align-items:center;margin-bottom:12px;overflow:hidden}
+.dash-marr{background:none;border:none;color:#e2e8f0;font-size:18px;padding:10px 16px;cursor:pointer;flex-shrink:0}
+.dash-mtitle{flex:1;text-align:center;font-size:14px;font-weight:700}
+.dash-grp-tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none;padding-bottom:2px}
+.dash-grp-tabs::-webkit-scrollbar{display:none}
+.dash-gtab{padding:6px 14px;border-radius:20px;border:1px solid #2d3f55;background:#1e293b;color:#94a3b8;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s}
+.dash-gtab.on{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.dash-summary{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.dash-summary::-webkit-scrollbar{display:none}
+.dash-sbox{background:#1e293b;border:1px solid #2d3f55;border-radius:10px;padding:10px 14px;min-width:90px;flex-shrink:0;text-align:center}
+.dash-snum{font-size:20px;font-weight:800}.dash-slbl{font-size:10px;color:#64748b;margin-top:2px}
+.dash-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid #2d3f55}
+.dash-table{width:100%;border-collapse:collapse;min-width:520px;font-size:13px}
+.dash-table thead tr{background:#1a2744}
+.dash-table th{padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#60a5fa;border-bottom:1px solid #2d3f55;white-space:nowrap}
+.dash-table th.center{text-align:center}
+.dash-table tbody tr{border-bottom:1px solid #1e2d40;transition:background .15s}
+.dash-table tbody tr:last-child{border-bottom:none}
+.dash-table tbody tr:hover{background:#1a2333}
+.dash-table td{padding:9px 12px;vertical-align:middle}
+.dash-num{font-size:11px;color:#64748b;width:28px}
+.dash-ava{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.dash-name{font-weight:700;font-size:13px}
+.dash-phone{font-size:11px;color:#64748b;margin-top:2px}
+.dash-att-cell{text-align:center;cursor:pointer;user-select:none}
+.dash-att-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;background:#1e2d40;color:#64748b;border:1px solid #2d3f55;min-width:52px;text-align:center}
+.dash-att-pill.good{background:rgba(34,197,94,.15);color:#4ade80;border-color:rgba(34,197,94,.3)}
+.dash-att-pill.warn{background:rgba(251,191,36,.15);color:#fbbf24;border-color:rgba(251,191,36,.3)}
+.dash-att-pill.bad{background:rgba(239,68,68,.15);color:#f87171;border-color:rgba(239,68,68,.3)}
+.dash-pay-cell{text-align:center;cursor:pointer;user-select:none}
+.dash-pay-pill{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;min-width:68px;text-align:center;border:1px solid transparent}
+.dash-pay-pill.paid{background:rgba(34,197,94,.15);color:#4ade80;border-color:rgba(34,197,94,.3)}
+.dash-pay-pill.unpaid{background:rgba(239,68,68,.15);color:#f87171;border-color:rgba(239,68,68,.3)}
+.dash-fee{text-align:right;font-size:12px;font-weight:700;white-space:nowrap}
+.dash-fee.paid{color:#4ade80}.dash-fee.unpaid{color:#f87171}
+.loader{text-align:center;padding:40px;color:#64748b}
+
+/* XONA SHEETS GRID */
+.xsheet-wrap{overflow-x:auto;border-radius:10px;border:1px solid #2d3f55;margin-bottom:4px}
+.xsheet{border-collapse:collapse;min-width:760px;width:100%;table-layout:fixed}
+.xsheet th{background:transparent;color:#60a5fa;font-size:10px;font-weight:700;padding:0;text-align:left;border:none;border-bottom:1px solid #2d3f55;white-space:nowrap;height:22px;position:relative;vertical-align:bottom}
+.xsheet th.xroom-h{position:sticky;left:0;z-index:2;background:#1a2744;min-width:64px;border:1px solid #1e2d40}
+.xsheet th span.xtime-lbl{position:absolute;left:0;bottom:-9px;transform:translateX(-50%);background:#1e293b;padding:1px 4px;border-radius:4px;line-height:1}
+.xsheet thead tr.xsheet-line{border-bottom:1px solid #2d3f55}
+.xsheet td{border:1px solid #1e2d40;padding:0;height:30px;min-width:46px}
+.xsheet td.xroom-c{position:sticky;left:0;background:#1e293b;z-index:1;font-size:11px;font-weight:700;color:#e2e8f0;text-align:center;padding:4px 2px;white-space:nowrap}
+.xcell{width:100%;height:100%;display:flex}
+.xcell-half{flex:1;height:100%}
+.xfree{background:rgba(34,197,94,.28)}
+.xbusy{background:rgba(239,68,68,.32)}
+.xsheet-legend{display:flex;gap:14px;align-items:center;margin:8px 0 14px;font-size:11px;color:#94a3b8}
+.xsheet-legend span{display:inline-flex;align-items:center;gap:5px}
+.xsheet-legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* DARS JADVALI */
+.dj-live{border-radius:14px;padding:14px 16px;margin-bottom:14px;border:1px solid}
+.dj-live.active{background:linear-gradient(135deg,rgba(34,197,94,.18),rgba(34,197,94,.05));border-color:rgba(34,197,94,.4)}
+.dj-live.wait{background:linear-gradient(135deg,rgba(251,191,36,.16),rgba(251,191,36,.04));border-color:rgba(251,191,36,.35)}
+.dj-live.idle{background:#1e293b;border-color:#2d3f55}
+.dj-live-title{font-size:13px;font-weight:800;margin-bottom:4px}
+.dj-live-sub{font-size:12px;color:#94a3b8}
+.dj-live-time{font-size:22px;font-weight:800;margin-top:6px}
+.dj-teacher-tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
+.dj-teacher-tabs::-webkit-scrollbar{display:none}
+.dj-ttab{padding:6px 14px;border-radius:20px;border:1px solid #2d3f55;background:#1e293b;color:#94a3b8;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.dj-ttab.on{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.dj-cell-content{font-size:9.5px;font-weight:700;color:#fff;text-align:center;line-height:1.25;padding:1px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%}
+.dj-cell-content .djtime{font-size:8.5px;opacity:.85;font-weight:600}
+.spin{display:inline-block;width:32px;height:32px;border:3px solid #2d3f55;border-top-color:#3b82f6;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:36px 16px;color:#64748b}
+.empty .ei{font-size:36px;margin-bottom:10px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid #2d3f55;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1}
+
+/* CHAT */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 110px)}
+.chat-msgs{flex:1;overflow-y:auto;padding:0 0 10px 0;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:80%;padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.5;word-break:break-word}
+.msg-out{align-self:flex-end;background:#3b82f6;color:#fff;border-bottom-right-radius:4px}
+.msg-in{align-self:flex-start;background:#1e293b;border:1px solid #2d3f55;border-bottom-left-radius:4px}
+.msg-meta{font-size:10px;opacity:.65;margin-top:4px}
+.msg-sender{font-size:10px;color:#60a5fa;font-weight:700;margin-bottom:3px}
+.chat-inp-row{display:flex;gap:8px;padding-top:10px;border-top:1px solid #1e2d40;background:#0a0f1e;position:sticky;bottom:0}
+.chat-inp{flex:1;background:#1e293b;border:1px solid #2d3f55;border-radius:10px;padding:10px 12px;color:#e2e8f0;font-size:14px;outline:none;font-family:inherit}
+.chat-send{background:#3b82f6;border:none;border-radius:10px;color:#fff;font-size:16px;width:42px;height:42px;cursor:pointer;flex-shrink:0}
+.chat-date-sep{text-align:center;font-size:10px;color:#64748b;margin:6px 0}
+
+/* VAZIFALAR */
+.vazifa-filters{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.vazifa-filters::-webkit-scrollbar{display:none}
+.vf-btn{padding:5px 12px;border-radius:20px;border:1px solid #2d3f55;background:#1e293b;color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.vf-btn.on{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.vcard{background:#1e293b;border:1px solid #2d3f55;border-radius:12px;padding:13px;margin-bottom:9px}
+.vcard.done{opacity:.6}
+.vtitle{font-size:14px;font-weight:700;margin-bottom:6px;display:flex;align-items:flex-start;gap:8px}
+.vcheck{width:18px;height:18px;border-radius:5px;border:2px solid #3b82f6;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;background:transparent}
+.vcheck.done{background:#3b82f6;border-color:#3b82f6}
+.vtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.vtag{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.vtag-dl{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.vtag-dl.ok{background:rgba(34,197,94,.15);color:#4ade80;border-color:rgba(34,197,94,.3)}
+.vtag-who{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)}
+.vtag-status-done{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.vtag-status-open{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+
+/* LIDLAR */
+.lid-filters{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.lid-filters::-webkit-scrollbar{display:none}
+.lf-btn{padding:5px 12px;border-radius:20px;border:1px solid #2d3f55;background:#1e293b;color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.lf-btn.on{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.lcard{background:#1e293b;border:1px solid #2d3f55;border-radius:12px;padding:13px;margin-bottom:9px;border-left:3px solid #3b82f6}
+.lcard.holat-yangi{border-left-color:#fbbf24}
+.lcard.holat-qongiroq{border-left-color:#3b82f6}
+.lcard.holat-qiziqdi{border-left-color:#a78bfa}
+.lcard.holat-aylandi{border-left-color:#4ade80}
+.lcard.holat-rad{border-left-color:#f87171;opacity:.6}
+.lcard-name{font-size:14px;font-weight:700;color:#e2e8f0;margin-bottom:4px}
+.lcard-meta{font-size:12px;color:#64748b;margin-bottom:8px}
+.lcard-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.ltag{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.ltag-kurs{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
+.ltag-yangi{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.ltag-qongiroq{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
+.ltag-qiziqdi{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
+.ltag-aylandi{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+.ltag-rad{background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.3)}
+.lcall-yes{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+.lcall-no{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+
+/* TELEGRAM */
+.tg-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.tg-linked{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.tg-unlinked{background:rgba(100,116,139,.15);color:#94a3b8;border:1px solid rgba(100,116,139,.3)}
+.tg-panel{background:#1e293b;border:1px solid #2d3f55;border-radius:14px;padding:16px;margin-bottom:12px}
+.tg-panel-title{font-size:13px;font-weight:700;color:#3b82f6;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.tg-input{width:100%;background:#111827;border:1px solid #2d3f55;border-radius:9px;padding:10px 12px;color:#e2e8f0;font-size:13px;outline:none;margin-bottom:8px;box-sizing:border-box;font-family:inherit;resize:none}
+.tg-send-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* YUZ KAMERA */
+.face-modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.face-modal-wrap.hide{display:none}
+.face-video{border-radius:16px;overflow:hidden;position:relative;width:100%;max-width:400px}
+.face-video video{width:100%;border-radius:16px;display:block}
+.face-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.face-circle{width:200px;height:200px;border-radius:50%;border:3px solid #3b82f6;box-shadow:0 0 0 2000px rgba(0,0,0,.5)}
+.face-btns{display:flex;gap:12px;margin-top:16px;width:100%;max-width:400px}
+.face-status{color:#e2e8f0;font-size:13px;text-align:center;margin-top:10px}
+.face-thumb{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #3b82f6}
+
+/* XONALAR */
+.xona-grid{display:flex;flex-direction:column;gap:12px}
+.xona-card{background:#1e293b;border:1px solid #2d3f55;border-radius:14px;overflow:hidden}
+.xona-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.xona-header:active{background:#243044}
+.xona-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.xona-name{font-size:15px;font-weight:800}
+.xona-meta{font-size:11px;color:#64748b;margin-top:2px}
+.xona-status{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.xona-status.band{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.xona-status.bosh{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.xona-body{display:none;border-top:1px solid #1e2d40;padding:14px}
+.xona-body.on{display:block}
+.jadval-row{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #1e2d40;font-size:12px}
+.jadval-row:last-child{border:none}
+.jadval-vaqt{color:#fbbf24;font-weight:700;font-size:11px}
+.kun-chip{padding:2px 7px;border-radius:20px;background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3);font-size:10px;font-weight:700;display:inline-block;margin:2px}
+</style>
+</head>
+<body>
+
+<div id="loginPage">
+  <div class="l-logo">🎓</div>
+  <div class="l-title">Future Academy</div>
+  <div class="l-sub">CRM tizimi</div>
+  <div class="l-box">
+    <h2>Tizimga kirish</h2>
+    <input class="linput" id="loginUser" placeholder="Login" autocomplete="off">
+    <input class="linput" id="loginPass" type="password" placeholder="Parol">
+    <button class="lbtn" onclick="doLogin()">Kirish →</button>
+    <div class="lerr" id="loginErr"></div>
+  </div>
+</div>
+
+<div id="mainWrap" style="flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden">
+<div class="nav" id="mainNav" style="display:none">
+  <div class="nav-left">
+    <button class="back-btn" id="backBtn" onclick="goBack()">◀ Orqaga</button>
+    <div class="nav-title" id="navTitle">🎓 <span>Future</span> Academy</div>
+  </div>
+  <div class="nav-right">
+    <span class="role-badge" id="roleBadge"></span>
+    <button class="nbtn" onclick="doLogout()">Chiqish</button>
+  </div>
+</div>
+
+<div class="folder-home" id="folderHome" style="display:none"></div>
+
+<div id="app" style="display:none">
+  <div id="pg-guruhlar" class="page on"></div>
+  <div id="pg-guruh-ichki" class="page"></div>
+  <div id="pg-xod" class="page"></div>
+  <div id="pg-rep" class="page"></div>
+  <div id="pg-chat" class="page"></div>
+  <div id="pg-vazifa" class="page"></div>
+  <div id="pg-tg" class="page"></div>
+  <div id="pg-lid" class="page"></div>
+  <div id="pg-xona" class="page"></div>
+  <div id="pg-yuz" class="page"></div>
+  <div id="pg-yangi-guruh" class="page"></div>
+  <div id="pg-xodim-davomat" class="page"></div>
+  <div id="pg-dashboard" class="page"></div>
+  <div id="pg-darsjadval" class="page"></div>
+  <div id="pg-frozen" class="page"></div>
+</div>
+
+<!-- VAZIFA MODAL -->
+<div class="overlay hide" id="vm">
+  <div class="modal">
+    <div class="mhead"><h2 id="vm-title">➕ Yangi vazifa</h2><button class="nbtn" onclick="closeModal('vm')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Vazifa nomi *</div><input class="finput" id="v-title" placeholder="Masalan: Dars rejasini tayyorlash"></div>
+      <div class="fgrow"><div class="flbl">Tavsif</div><textarea class="finput" id="v-desc" rows="2" placeholder="Batafsil..." style="resize:none"></textarea></div>
+      <div class="fgrow"><div class="flbl">Kimga *</div><select class="fselect" id="v-who" multiple style="height:100px;padding:4px"></select></div>
+      <div class="fgrow"><div class="flbl">Deadline *</div><input class="finput" id="v-deadline" type="datetime-local"></div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('vm')">Bekor</button><button class="btn btn-blue" onclick="saveVazifa()">💾 Saqlash</button></div>
+  </div>
+</div>
+</div>
+
+<!-- STUDENT MODAL -->
+<div class="overlay hide" id="sm">
+  <div class="modal">
+    <div class="mhead"><h2 id="sm-title">➕ Yangi o'quvchi</h2><button class="nbtn" onclick="closeModal('sm')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Ism Familiya *</div><input class="finput" id="s-name" placeholder="Karimov Ali"></div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Telefon</div><input class="finput" id="s-phone" type="text" inputmode="numeric" placeholder="55 010 99 66" maxlength="13" oninput="formatPhoneInput(this)"></div>
+        <div class="fgrow"><div class="flbl">Yoshi</div><input class="finput" id="s-age" type="number" placeholder="7"></div>
+      </div>
+      <div class="fgrow"><div class="flbl">Guruh *</div><select class="fselect" id="s-group"></select></div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Kichik guruh (ixtiyoriy)</div><input class="finput" id="s-subgroup" placeholder="Masalan: A yoki 1-guruh"></div>
+        <div class="fgrow"><div class="flbl">Dars vaqti</div><input class="finput" id="s-subtime" placeholder="09:00-11:00"></div>
+      </div>
+      <div class="fgrow"><div class="flbl">Dars kunlari (ixtiyoriy)</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="s-kunlar">
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Du"> Dush</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Se"> Sesh</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ch"> Chor</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Pa"> Pay</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ju"> Juma</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Sh"> Shan</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ya"> Yak</label>
+        </div>
+        <div style="font-size:10.5px;color:#64748b;margin-top:4px">Kun belgilanmasa, o'quvchi "Asosiy guruh"ga qo'shiladi</div>
+      </div>
+      <div class="fgrow"><div class="flbl">Ustoz</div><input class="finput" id="s-teacher" placeholder="Ustoz ismi"></div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Oylik (so'm)</div><input class="finput" id="s-fee" type="text" inputmode="numeric" placeholder="300 000" oninput="formatFeeInput(this)"></div>
+        <div class="fgrow"><div class="flbl">Holat</div><select class="fselect" id="s-status"><option value="active">Faol</option><option value="inactive">Nofaol</option></select></div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('sm')">Bekor</button><button class="btn btn-blue" onclick="saveStudent()">💾 Saqlash</button></div>
+  </div>
+</div>
+
+<!-- GROUP MODAL -->
+<div class="overlay hide" id="gm">
+  <div class="modal">
+    <div class="mhead"><h2 id="gm-title">👥 Yangi guruh</h2><button class="nbtn" onclick="closeModal('gm')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Guruh nomi *</div><input class="finput" id="g-name" placeholder="Kids 5 kun"></div>
+      <div class="fgrow"><div class="flbl">Xona</div><select class="fselect" id="g-xona"><option value="">— Tanlanmagan —</option></select></div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Boshlanish</div><input class="finput" id="g-bosh" type="time" value="09:00"></div>
+        <div class="fgrow"><div class="flbl">Tugash</div><input class="finput" id="g-tug" type="time" value="11:00"></div>
+      </div>
+      <div class="fgrow"><div class="flbl">Dars kunlari</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="g-kunlar">
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Du" checked> Dush</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Se" checked> Sesh</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ch" checked> Chor</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Pa" checked> Pay</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ju" checked> Juma</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Sh"> Shan</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ya"> Yak</label>
+        </div>
+      </div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Rang</div>
+          <select class="fselect" id="g-color">
+            <option value="#3b82f6">Ko'k</option><option value="#22c55e">Yashil</option>
+            <option value="#f59e0b">Sariq</option><option value="#ef4444">Qizil</option>
+            <option value="#8b5cf6">Binafsha</option><option value="#ec4899">Pushti</option>
+          </select>
+        </div>
+        <div class="fgrow"><div class="flbl">Ustoz</div><input class="finput" id="g-teacher" placeholder="Ustoz ismi"></div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('gm')">Bekor</button><button class="btn btn-blue" onclick="saveGroup()">💾 Saqlash</button></div>
+  </div>
+</div>
+
+<!-- GURUHCHA (SUBGROUP) XONA MODAL -->
+<div class="overlay hide" id="subxona-modal">
+  <div class="modal">
+    <div class="mhead"><h2 id="sx-title">🏠 Guruhcha — xona belgilash</h2><button class="nbtn" onclick="closeModal('subxona-modal')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Xona</div><select class="fselect" id="sx-xona"><option value="">— Tanlanmagan —</option></select></div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Boshlanish</div><input class="finput" id="sx-bosh" type="time" value="09:00"></div>
+        <div class="fgrow"><div class="flbl">Tugash</div><input class="finput" id="sx-tug" type="time" value="11:00"></div>
+      </div>
+      <div class="fgrow"><div class="flbl">Dars kunlari</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="sx-kunlar">
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Du" checked> Dush</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Se" checked> Sesh</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ch" checked> Chor</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Pa" checked> Pay</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ju" checked> Juma</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Sh"> Shan</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ya"> Yak</label>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('subxona-modal')">Bekor</button><button class="btn btn-blue" onclick="saveSubXona()">💾 Saqlash</button></div>
+  </div>
+</div>
+
+<!-- DARS (JADVAL) TAHRIRLASH MODAL — haftalik jadvaldagi katakni bosganda ochiladi -->
+<div class="overlay hide" id="jx-modal">
+  <div class="modal">
+    <div class="mhead"><h2 id="jx-title">✏️ Darsni tahrirlash</h2><button class="nbtn" onclick="closeModal('jx-modal')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Guruh</div><select class="fselect" id="jx-guruh"><option value="">— Tanlang —</option></select></div>
+      <div class="fgrow"><div class="flbl">Xona</div><select class="fselect" id="jx-xona"><option value="">— Tanlanmagan —</option></select></div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Boshlanish</div><input class="finput" id="jx-bosh" type="time" value="09:00"></div>
+        <div class="fgrow"><div class="flbl">Tugash</div><input class="finput" id="jx-tug" type="time" value="11:00"></div>
+      </div>
+      <div class="fgrow"><div class="flbl">Dars kunlari</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="jx-kunlar">
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Du"> Dush</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Se"> Sesh</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ch"> Chor</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Pa"> Pay</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ju"> Juma</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Sh"> Shan</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ya"> Yak</label>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-red" onclick="deleteJX()">🗑️ O'chirish</button><button class="btn btn-gray" onclick="closeModal('jx-modal')">Bekor</button><button class="btn btn-blue" onclick="saveJX()">💾 Saqlash</button></div>
+  </div>
+</div>
+
+<!-- O'QUVCHI QIDIRUV MODAL -->
+<div class="overlay hide" id="stsearch-modal">
+  <div class="modal">
+    <div class="mhead"><h2>🔍 O'quvchini qidirish</h2><button class="nbtn" onclick="closeModal('stsearch-modal')">✕</button></div>
+    <div class="mbody">
+      <input class="finput" id="stsearch-input" placeholder="Ism yoki familiya..." oninput="renderStSearchResults()">
+      <div id="stsearch-results" style="margin-top:12px;display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('stsearch-modal')">Yopish</button></div>
+  </div>
+</div>
+
+<!-- TO'LOV KIRITISH MODAL -->
+<div class="overlay hide" id="pay-modal">
+  <div class="modal">
+    <div class="mhead"><h2 id="pay-modal-title">💳 To'lov</h2><button class="nbtn" onclick="closeModal('pay-modal')">✕</button></div>
+    <div class="mbody">
+      <div id="pay-fee-info" style="font-size:13px;line-height:1.6;margin-bottom:14px;background:#1e293b;border:1px solid #2d3f55;border-radius:9px;padding:10px 12px"></div>
+      <div class="fgrow"><div class="flbl">To'lov summasi (so'm)</div><input class="finput" id="pay-amount" type="text" inputmode="numeric" placeholder="500000"></div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="resetPayAmount()">🗑️ Tozalash</button><button class="btn btn-gray" onclick="closeModal('pay-modal')">Bekor</button><button class="btn btn-blue" onclick="savePayAmount()">💾 Saqlash</button></div>
+  </div>
+</div>
+
+<!-- MUZLATILGANDAN QAYTA TIKLASH MODAL -->
+<div class="overlay hide" id="restore-modal">
+  <div class="modal">
+    <div class="mhead"><h2 id="restore-title">♻️ Qayta tiklash</h2><button class="nbtn" onclick="closeModal('restore-modal')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Qaysi guruhga qo'shilsin?</div><select class="fselect" id="restore-group"></select></div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('restore-modal')">Bekor</button><button class="btn btn-blue" onclick="confirmRestore()">✅ Tasdiqlash</button></div>
+  </div>
+</div>
+<div class="overlay hide" id="xm">
+  <div class="modal">
+    <div class="mhead"><h2 id="xm-title">👤 Yangi xodim</h2><button class="nbtn" onclick="closeModal('xm')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Ism *</div><input class="finput" id="x-name" placeholder="Ali Karimov"></div>
+      <div class="fgrow"><div class="flbl">Login *</div><input class="finput" id="x-login" placeholder="ali_ustoz" autocomplete="off"></div>
+      <div class="fgrow"><div class="flbl">Parol *</div><input class="finput" id="x-pass" type="password" placeholder="Kamida 4 belgi"></div>
+      <div class="fgrow"><div class="flbl">Rol *</div>
+        <select class="fselect" id="x-role">
+          <option value="ustoz">👨‍🏫 Ustoz</option>
+          <option value="admin">👑 Admin</option>
+        </select>
+      </div>
+      <div class="fgrow"><div class="flbl">Guruhlar</div><select class="fselect" id="x-group" multiple style="height:120px;padding:4px"></select></div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Ish boshlanish</div><input class="finput" id="x-ish-bosh" type="time" placeholder="09:00" value="09:00"></div>
+        <div class="fgrow"><div class="flbl">Ish tugash</div><input class="finput" id="x-ish-tug" type="time" placeholder="18:00" value="18:00"></div>
+      </div>
+      <div class="fgrow"><div class="flbl">Ish kunlari</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px" id="x-kunlar">
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Du" checked> Dush</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Se" checked> Sesh</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ch" checked> Chor</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Pa" checked> Pay</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ju" checked> Juma</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Sh"> Shan</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#e2e8f0"><input type="checkbox" value="Ya"> Yak</label>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('xm')">Bekor</button><button class="btn btn-blue" onclick="saveXodim()">💾 Saqlash</button></div>
+  </div>
+</div>
+
+<!-- XONA MODAL -->
+<div class="overlay hide" id="xona-modal">
+  <div class="modal">
+    <div class="mhead"><h2 id="xona-modal-title">🏠 Yangi xona</h2><button class="nbtn" onclick="closeModal('xona-modal')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Xona nomi *</div><input class="finput" id="xn-nom" placeholder="Masalan: Katta xona"></div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Turi</div>
+          <select class="fselect" id="xn-tur">
+            <option value="katta">🏛️ Katta (18 kishi)</option>
+            <option value="orta">🏠 O'rtacha (12 kishi)</option>
+            <option value="individual">👤 Individual (4 kishi)</option>
+            <option value="kids">🧒 Kids xonasi</option>
+            <option value="oshxona">🍽️ Oshxona</option>
+          </select>
+        </div>
+        <div class="fgrow"><div class="flbl">Rang</div>
+          <select class="fselect" id="xn-rang">
+            <option value="#3b82f6">Ko'k</option><option value="#22c55e">Yashil</option>
+            <option value="#f59e0b">Sariq</option><option value="#ef4444">Qizil</option>
+            <option value="#8b5cf6">Binafsha</option><option value="#ec4899">Pushti</option>
+          </select>
+        </div>
+      </div>
+      <div class="fgrow"><div class="flbl">Izoh (ixtiyoriy)</div><input class="finput" id="xn-izoh" placeholder="Qo'shimcha ma'lumot"></div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('xona-modal')">Bekor</button><button class="btn btn-blue" onclick="saveXona()">💾 Saqlash</button></div>
+  </div>
+</div>
+
+<!-- JADVAL MODAL -->
+<div class="overlay hide" id="jadval-modal">
+  <div class="modal">
+    <div class="mhead"><h2 id="jd-title">📅 Dars jadvali qo'shish</h2><button class="nbtn" onclick="closeModal('jadval-modal')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Guruh *</div><select class="fselect" id="jd-guruh"></select></div>
+      <div class="fgrow"><div class="flbl">Xona *</div><select class="fselect" id="jd-xona"></select></div>
+      <div class="fgrow"><div class="flbl">Kunlar *</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px" id="jd-kunlar">
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#e2e8f0"><input type="checkbox" value="Du"> Dush</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#e2e8f0"><input type="checkbox" value="Se"> Sesh</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#e2e8f0"><input type="checkbox" value="Ch"> Chor</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#e2e8f0"><input type="checkbox" value="Pa"> Pay</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#e2e8f0"><input type="checkbox" value="Ju"> Juma</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#e2e8f0"><input type="checkbox" value="Sh"> Shan</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#e2e8f0"><input type="checkbox" value="Ya"> Yak</label>
+        </div>
+      </div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Boshlanish *</div><input class="finput" id="jd-bosh" type="time" value="09:00"></div>
+        <div class="fgrow"><div class="flbl">Tugash *</div><input class="finput" id="jd-tug" type="time" value="11:00"></div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-gray" onclick="closeModal('jadval-modal')">Bekor</button>
+      <button class="btn btn-red hide" id="jd-del-btn" onclick="delJadvalFromModal()">🗑️</button>
+      <button class="btn btn-blue" onclick="saveJadval()">💾 Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- YANGI GURUH MODAL -->
+<div class="overlay hide" id="yg-modal">
+  <div class="modal">
+    <div class="mhead"><h2 id="yg-modal-title">🆕 Yangi guruh ochish</h2><button class="nbtn" onclick="closeModal('yg-modal')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrow"><div class="flbl">Guruh nomi *</div><input class="finput" id="yg-nom" placeholder="Masalan: Python kursi — Yanvar 2027"></div>
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Boshlanish vaqti</div><input class="finput" id="yg-boshlanish" placeholder="Yanvar 2027"></div>
+        <div class="fgrow"><div class="flbl">Sig'im (kishi)</div><input class="finput" id="yg-sigim" type="number" placeholder="10" value="10"></div>
+      </div>
+      <div class="fgrow"><div class="flbl">Izoh</div><input class="finput" id="yg-izoh" placeholder="Qo'shimcha ma'lumot"></div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('yg-modal')">Bekor</button><button class="btn btn-blue" onclick="saveYG()">💾 Saqlash</button></div>
+  </div>
+</div>
+
+<!-- LID MODAL -->
+<div class="overlay hide" id="lm">
+  <div class="modal">
+    <div class="mhead"><h2 id="lm-title">🎯 Yangi lid</h2><button class="nbtn" onclick="closeModal('lm')">✕</button></div>
+    <div class="mbody">
+      <div class="f2">
+        <div class="fgrow"><div class="flbl">Ism *</div><input class="finput" id="l-name" placeholder="Ali Karimov"></div>
+        <div class="fgrow"><div class="flbl">Telefon *</div><input class="finput" id="l-phone" placeholder="+998 90 000 00 00"></div>
+      </div>
+      <div class="fgrow"><div class="flbl">Qiziqayotgan kurs</div><input class="finput" id="l-kurs" placeholder="Masalan: Ingliz tili"></div>
+      <div class="fgrow"><div class="flbl">Holat</div>
+        <select class="fselect" id="l-holat">
+          <option value="yangi">🟡 Yangi</option>
+          <option value="qongiroq">📞 Qo'ng'iroq kutilmoqda</option>
+          <option value="qiziqdi">🟣 Qiziqdi</option>
+          <option value="aylandi">🟢 O'quvchiga aylandi</option>
+          <option value="rad">🔴 Rad etdi</option>
+        </select>
+      </div>
+      <div class="fgrow"><div class="flbl">Telefon qilindimi?</div>
+        <select class="fselect" id="l-call">
+          <option value="no">❌ Yo'q</option>
+          <option value="yes">✅ Ha</option>
+        </select>
+      </div>
+      <div class="fgrow"><div class="flbl">Izoh</div><textarea class="finput" id="l-izoh" rows="2" placeholder="Qo'shimcha ma'lumot..." style="resize:none"></textarea></div>
+    </div>
+    <div class="mfoot"><button class="btn btn-gray" onclick="closeModal('lm')">Bekor</button><button class="btn btn-blue" onclick="saveLid()">💾 Saqlash</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- YUZ KAMERA MODAL -->
+<div class="face-modal-wrap hide" id="face-modal">
+  <div style="color:#e2e8f0;font-size:16px;font-weight:700;margin-bottom:14px;text-align:center" id="face-modal-title">📷 Yuz qo'shish</div>
+  <div class="face-video">
+    <video id="face-video" autoplay playsinline></video>
+    <div class="face-overlay"><div class="face-circle"></div></div>
+  </div>
+  <div class="face-status" id="face-status">Yuzingizni doira ichiga joylashtiring</div>
+  <canvas id="face-canvas" style="display:none"></canvas>
+  <div class="face-btns">
+    <button class="btn btn-gray" style="flex:1" onclick="closeFaceModal()">❌ Bekor</button>
+    <button class="btn btn-blue" style="flex:1" onclick="captureFace()">📸 Rasm olish</button>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,doc,getDocs,setDoc,addDoc,updateDoc,deleteDoc,onSnapshot,orderBy,query,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig={
+  apiKey:"AIzaSyCLoUUxhKQ6eV27waMpPUgZlNTRRqmQiqU",
+  authDomain:"future-academy-a9177.firebaseapp.com",
+  projectId:"future-academy-a9177",
+  storageBucket:"future-academy-a9177.firebasestorage.app",
+  messagingSenderId:"455979338858",
+  appId:"1:455979338858:web:b6a27e84dcf5247c774e13",
+  measurementId:"G-Y1BVGCCXTY"
+};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+
+let CU=null,students=[],groups=[],xodimlar=[],att={},pay={};
+let openC={},openBT={},curTab='guruhlar',eSid=null,eGid=null,eXid=null;
+let activeGroup=null,activeInnerTab='davomat';
+const MN=["Yanvar","Fevral","Mart","Aprel","May","Iyun","Iyul","Avgust","Sentabr","Oktabr","Noyabr","Dekabr"];
+let cY=new Date().getFullYear(),cM=new Date().getMonth();
+const mk=()=>cY+'-'+(cM<9?'0':'')+(cM+1);
+const dim=()=>new Date(cY,cM+1,0).getDate();
+const mlbl=()=>MN[cM]+' '+cY;
+const isAdmin=()=>CU&&CU.role==='admin';
+const getGrpStudents=gname=>students.filter(s=>s.status==='active'&&s.group===gname);
+
+// XONALAR
+let xonalar=[],jadvallar=[],eXonaId=null,openXona={};
+const KUN_NOMI={Du:'Dush',Se:'Sesh',Ch:'Chor',Pa:'Pay',Ju:'Juma',Sh:'Shan',Ya:'Yak'};
+const XONA_TUR_ICON={katta:'🏛️',orta:'🏠',individual:'👤',kids:'🧒',oshxona:'🍽️'};
+
+async function loadXonalar(){
+  try{
+    const xs=await getDocs(collection(db,'xonalar'));
+    xonalar=[];xs.forEach(d=>xonalar.push({id:d.id,...d.data()}));
+    const js=await getDocs(collection(db,'jadval'));
+    jadvallar=[];js.forEach(d=>jadvallar.push({id:d.id,...d.data()}));
+  }catch(e){console.log(e);}
+}
+
+function isXonaBand(xonaId){
+  const now=new Date();
+  const kunlar=['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+  const bugun=kunlar[now.getDay()];
+  const hozir=now.getHours()*60+now.getMinutes();
+  return jadvallar.some(j=>{
+    if(j.xonaId!==xonaId)return false;
+    if(!Array.isArray(j.kunlar)||!j.kunlar.includes(bugun))return false;
+    const[bH,bM]=(j.boshlanish||'00:00').split(':').map(Number);
+    const[tH,tM]=(j.tugash||'00:00').split(':').map(Number);
+    return hozir>=(bH*60+bM)&&hozir<=(tH*60+tM);
+  });
+}
+
+function getXonaJadval(xonaId){return jadvallar.filter(j=>j.xonaId===xonaId);}
+
+// LOGIN
+window.doLogin=async function(){
+  const l=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value.trim();
+  const er=document.getElementById('loginErr');
+  er.textContent='';
+  if(!l||!p){er.textContent='Login va parolni kiriting!';return;}
+  if(l==='Muhammad_max'&&p==='max1999'){CU={id:'admin',name:'Administrator',role:'admin',login:'Muhammad_max'};onOK();return;}
+  try{
+    const sn=await getDocs(collection(db,'xodimlar'));
+    let found=null;
+    sn.forEach(d=>{const x=d.data();if(x.login===l&&x.password===p)found={id:d.id,...x};});
+    if(found){CU=found;onOK();}else er.textContent="Login yoki parol noto'g'ri!";
+  }catch(e){er.textContent='Xatolik: '+e.message;}
+};
+
+function onOK(){
+  document.getElementById('loginPage').classList.add('hide');
+  document.getElementById('mainWrap').style.display='flex';
+  document.getElementById('mainNav').style.display='flex';
+  document.getElementById('folderHome').style.display='block';
+  document.getElementById('app').style.display='none';
+  const rb=document.getElementById('roleBadge');
+  rb.textContent=(isAdmin()?'👑 Admin':'👨‍🏫 Ustoz')+' · '+CU.name;
+  rb.className='role-badge'+(isAdmin()?' admin':'');
+  buildFolderGrid();
+  loadAll();
+  startChatListener();
+  startVazifaListener();
+  if(isAdmin())startLidListener();
+}
+
+function buildFolderGrid(){
+  const home=document.getElementById('folderHome');
+  const folders=[
+    {key:'guruhlar',icon:'🏠',name:'Guruhlar',sub:"O'quvchilar va darslar"},
+    {key:'chat',icon:'💬',name:'Chat',sub:'Xodimlar muhokamasi'},
+    {key:'vazifa',icon:'✅',name:'Vazifalar',sub:'Topshiriqlar',id:'folder-vazifa'},
+  ];
+  if(isAdmin()){
+    folders.push({key:'xona',icon:'🚪',name:'Xonalar',sub:'Jadval va holat'});
+    folders.push({key:'xod',icon:'👤',name:'Xodimlar',sub:'Ustozlar va adminlar'});
+    folders.push({key:'rep',icon:'📊',name:'Hisobot',sub:"To'lovlar statistikasi"});
+    folders.push({key:'tg',icon:'📲',name:'Telegram',sub:'Xabar va eslatmalar'});
+    folders.push({key:'lid',icon:'🎯',name:'Lidlar',sub:"Yangi o'quvchi kuzatuvi"});
+    folders.push({key:'yangi-guruh',icon:'🆕',name:'Yangi guruhlar',sub:'Kutish ro\'yxati'});
+    folders.push({key:'xodim-davomat',icon:'👨‍💼',name:'Xodim davomati',sub:'Keldi/Kelmadi'});
+    folders.push({key:'yuz',icon:'👁️',name:'Yuz tanish',sub:'Bugungi davomat'});
+    folders.push({key:'frozen',icon:'🧊',name:'Muzlatilganlar',sub:"Vaqtincha to'xtatilganlar"});
+  }
+  folders.push({key:'dashboard',icon:'📋',name:'Dashboard',sub:"O'quvchilar jadvali"});
+  folders.push({key:'darsjadval',icon:'📅',name:'Dars jadvali',sub:'Vaqt va holat'});
+  let html=`<div style="padding:4px 0 12px"><div style="font-size:11px;color:#64748b;font-weight:700;letter-spacing:1px">BOSHQARUV TIZIMI</div></div>`;
+  html+=`<div class="folder-grid">`;
+  folders.forEach(f=>{
+    html+=`<div class="folder-card" id="${f.id||'folder-'+f.key}" onclick="gTab('${f.key}')">
+      <span class="folder-dot" id="dot-${f.key}"></span>
+      <span class="folder-icon">${f.icon}</span>
+      <div class="folder-name">${f.name}</div>
+      <div class="folder-sub">${f.sub}</div>
+    </div>`;
+  });
+  html+=`</div>`;
+  home.innerHTML=html;
+}
+
+
+function setDot(key,color){
+  const dot=document.getElementById('dot-'+key);
+  if(!dot)return;
+  dot.className='folder-dot'+(color?' '+color:'');
+}
+
+window.doLogout=function(){
+  CU=null;activeGroup=null;
+  document.getElementById('loginPage').classList.remove('hide');
+  ['mainNav','folderHome','app'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+};
+
+async function loadAll(){
+  document.getElementById('pg-guruhlar').innerHTML='<div class="loader"><div class="spin"></div><br>Yuklanmoqda...</div>';
+  try{
+    const gs=await getDocs(collection(db,'groups'));
+    groups=[];gs.forEach(d=>groups.push({id:d.id,...d.data()}));
+    const ss=await getDocs(collection(db,'students'));
+    students=[];ss.forEach(d=>students.push({id:d.id,...d.data()}));
+    const xs=await getDocs(collection(db,'xodimlar'));xodimlar=[];xs.forEach(d=>xodimlar.push({id:d.id,...d.data()}));
+    await loadMonth();
+    await loadXonalar();
+    render();
+  }catch(e){toast('❗ '+e.message);render();}
+}
+
+async function loadMonth(){
+  const m=mk();
+  try{const a=await getDocs(collection(db,'att_'+m));att={};a.forEach(d=>att[d.id]=d.data());}catch{att={};}
+  try{const p=await getDocs(collection(db,'pay_'+m));pay={};p.forEach(d=>pay[d.id]=d.data());}catch{pay={};}
+}
+
+// NAV
+window.gTab=function(t){
+  if(typeof djTimerHandle!=='undefined'&&djTimerHandle&&t!=='darsjadval'){clearInterval(djTimerHandle);djTimerHandle=null;}
+  curTab=t;
+  activeGroup=null;
+  document.getElementById('folderHome').style.display='none';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  const pg=document.getElementById('pg-'+t);
+  if(pg)pg.classList.add('on');
+  document.getElementById('app').style.display='block';
+  // Show back button
+  document.getElementById('backBtn').style.display='flex';
+  const tabNames={guruhlar:'🏠 Guruhlar',xona:'🚪 Xonalar',xod:'👤 Xodimlar',rep:'📊 Hisobot',chat:'💬 Chat',vazifa:'✅ Vazifalar',tg:'📲 Telegram',lid:'🎯 Lidlar',dashboard:'📋 Dashboard',darsjadval:'📅 Dars jadvali',frozen:'🧊 Muzlatilganlar'};
+  document.getElementById('navTitle').innerHTML=tabNames[t]||'🎓 <span style="color:#3b82f6">Future</span> Academy';
+  render();
+};
+
+window.goHome=function(){
+  if(typeof djTimerHandle!=='undefined'&&djTimerHandle){clearInterval(djTimerHandle);djTimerHandle=null;}
+  curTab='';
+  activeGroup=null;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('app').style.display='none';
+  document.getElementById('backBtn').style.display='none';
+  document.getElementById('navTitle').innerHTML='🎓 <span style="color:#3b82f6">Future</span> Academy';
+  document.getElementById('folderHome').style.display='block';
+  buildFolderGrid();
+};
+
+window.goBack=function(){
+  if(activeGroup){
+    activeGroup=null;
+    document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+    document.getElementById('pg-guruhlar').classList.add('on');
+    document.getElementById('navTitle').innerHTML='🏠 Guruhlar';
+    renderGuruhlar();
+  } else {
+    goHome();
+  }
+};
+
+window.openGroup=async function(gname,highlightSid){
+  activeGroup=gname;
+  activeInnerTab='davomat';
+  openC={};openBT={};
+  if(highlightSid)openC['d'+highlightSid]=true;
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  document.getElementById('pg-guruh-ichki').classList.add('on');
+  document.getElementById('backBtn').style.display='flex';
+  const g=groups.find(x=>x.name===gname);
+  document.getElementById('navTitle').innerHTML=`<span style="color:${g?g.color:'#3b82f6'}">${gname}</span>`;
+  renderGuruhIchki();
+  if(highlightSid){
+    setTimeout(()=>{
+      const el=document.querySelector(`[data-sid="${highlightSid}"]`);
+      if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+    },150);
+  }
+};
+window.openStSearch=function(){
+  document.getElementById('stsearch-input').value='';
+  document.getElementById('stsearch-results').innerHTML='<div style="color:#64748b;font-size:12px;text-align:center;padding:10px">Ism yoki familiya kiriting...</div>';
+  document.getElementById('stsearch-modal').classList.remove('hide');
+  setTimeout(()=>{const inp=document.getElementById('stsearch-input');if(inp)inp.focus();},150);
+};
+window.renderStSearchResults=function(){
+  const q=document.getElementById('stsearch-input').value.trim().toLowerCase();
+  const box=document.getElementById('stsearch-results');
+  if(!q){box.innerHTML='<div style="color:#64748b;font-size:12px;text-align:center;padding:10px">Ism yoki familiya kiriting...</div>';return;}
+  const allowedGroups=isAdmin()?null:(Array.isArray(CU.groups)?CU.groups:(CU.group?[CU.group]:[]));
+  let results=students.filter(s=>s.status==='active'&&s.name&&s.name.toLowerCase().includes(q));
+  if(allowedGroups)results=results.filter(s=>allowedGroups.includes(s.group));
+  results=results.slice(0,25);
+  if(!results.length){box.innerHTML='<div style="color:#64748b;font-size:12px;text-align:center;padding:10px">Hech narsa topilmadi</div>';return;}
+  box.innerHTML=results.map(s=>{
+    const full=isPaidFull(s.id);
+    const ini=s.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+    return `<div onclick="goToStudentFromSearch('${s.id}')" style="display:flex;align-items:center;gap:10px;background:#1e293b;border:1px solid #2d3f55;border-radius:10px;padding:10px;cursor:pointer">
+      <div class="ava" style="background:#3b82f6">${ini}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:13px">${s.name}</div>
+        <div style="font-size:11px;color:#94a3b8">${s.group||'—'} · ${s.age?s.age+' yosh':'yosh —'} · 📞 ${s.phone||'—'}</div>
+      </div>
+      <span class="pill ${full?'p-green':'p-red'}" style="font-size:10px;white-space:nowrap">${full?'✅ To\'ladi':'⏳ Yo\'q'}</span>
+    </div>`;
+  }).join('');
+};
+window.goToStudentFromSearch=function(sid){
+  const s=students.find(x=>x.id===sid);if(!s||!s.group)return;
+  closeModal('stsearch-modal');
+  openGroup(s.group,sid);
+};
+
+window.changeMonth=async function(d){
+  cM+=d;if(cM<0){cM=11;cY--;}if(cM>11){cM=0;cY++;}
+  await loadMonth();render();
+};
+
+window.setInnerTab=function(t){
+  activeInnerTab=t;openC={};openBT={};renderGuruhIchki();
+};
+
+function render(){
+  if(activeGroup){renderGuruhIchki();return;}
+  if(curTab==='guruhlar')renderGuruhlar();
+  else if(curTab==='xona')renderXona();
+  else if(curTab==='yuz')renderYuzTanish();
+  else if(curTab==='yangi-guruh')renderYangiGuruhlar();
+  else if(curTab==='xodim-davomat')renderXodimDavomat();
+  else if(curTab==='xod')renderXod();
+  else if(curTab==='chat')renderChat();
+  else if(curTab==='vazifa')renderVazifalar();
+  else if(curTab==='tg')renderTelegram();
+  else if(curTab==='lid')renderLidlar();
+  else if(curTab==='rep')renderRep();
+  else if(curTab==='dashboard')renderDashboard();
+  else if(curTab==='darsjadval')renderDarsJadval();
+  else if(curTab==='frozen')renderFrozen();
+}
+
+const mbar=()=>`<div class="mbar"><button class="marr" onclick="changeMonth(-1)">◀</button><div class="mtitle">${mlbl()}</div><button class="marr" onclick="changeMonth(1)">▶</button></div>`;
+const getA=(sid,d)=>(att[sid]||{})[d];
+const cntK=sid=>Object.values(att[sid]||{}).filter(v=>v==='k').length;
+const cntKm=sid=>Object.values(att[sid]||{}).filter(v=>v==='km').length;
+const getPay=sid=>{
+  const raw=pay[sid]||{};
+  const paidAmount=typeof raw.paidAmount==='number'?raw.paidAmount:(raw.paid?(raw.amount||0):0);
+  return {paidAmount,note:raw.note||'',date:raw.date||''};
+};
+const feeOf=sid=>{const s=students.find(x=>x.id===sid);return s?(s.fee||0):0;};
+const debtOf=sid=>Math.max(feeOf(sid)-getPay(sid).paidAmount,0);
+const isPaidFull=sid=>{const fee=feeOf(sid),pa=getPay(sid).paidAmount;return fee>0?pa>=fee:pa>0;};
+
+// GURUHLAR
+function renderGuruhlar(){
+  let myGroups=isAdmin()?groups:groups.filter(g=>{const ug=Array.isArray(CU.groups)?CU.groups:(CU.group?[CU.group]:[]);return ug.includes(g.name);});
+  let h='';
+  h+=`<div style="display:flex;gap:8px;margin-bottom:14px">
+    ${isAdmin()?`<button class="btn btn-blue" style="flex:1" onclick="openGM()">➕ Yangi guruh qo'shish</button>`:''}
+    <button class="btn btn-gray" style="${isAdmin()?'':'flex:1'};padding:0 16px" onclick="openStSearch()" title="O'quvchini qidirish">🔍</button>
+  </div>`;
+  if(!myGroups.length){h+='<div class="empty"><div class="ei">👥</div>Guruhlar yo\'q</div>';document.getElementById('pg-guruhlar').innerHTML=h;return;}
+  h+='<div class="grp-grid">';
+  myGroups.forEach(g=>{
+    const list=getGrpStudents(g.name);
+    const paidCnt=list.filter(s=>isPaidFull(s.id)).length;
+    const totalK=list.reduce((a,s)=>a+cntK(s.id),0);
+    // Subguruhlar sonini hisoblash
+    const subGrpSet=new Set(list.map(s=>s.subGroup).filter(Boolean));
+    const subGrpCount=subGrpSet.size;
+    h+=`<div class="grp-card" onclick="openGroup('${g.name}')">
+      <div class="grp-banner" style="background:linear-gradient(135deg,${g.color}cc,${g.color}88)">
+        <div class="grp-banner-left">
+          <div class="grp-icon">👥</div>
+          <div>
+            <div class="grp-name">${g.name}</div>
+            <div class="grp-meta">👨‍🏫 ${g.teacher||'—'} · ⏰ ${g.time||'—'}</div>
+            ${subGrpCount>0?`<div style="font-size:10px;margin-top:3px;opacity:.9">📌 ${subGrpCount} ta kichik guruh</div>`:''}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div class="grp-stats">
+            <div class="grp-stat"><div class="n">${list.length}</div><div class="l">O'quvchi</div></div>
+            <div class="grp-stat"><div class="n">${paidCnt}</div><div class="l">To'ladi</div></div>
+            <div class="grp-stat"><div class="n">${totalK}</div><div class="l">Keldi</div></div>
+          </div>
+          <div style="font-size:22px">▶</div>
+        </div>
+      </div>
+    </div>`;
+    if(isAdmin()){
+      h+=`<div style="display:flex;gap:8px;margin-top:-6px;margin-bottom:6px;padding:0 4px">
+        <button class="btn btn-purple" style="flex:1;font-size:12px" onclick="event.stopPropagation();editG('${g.id}')">✏️ Tahrirlash</button>
+        <button class="btn btn-red" style="font-size:12px" onclick="event.stopPropagation();delG('${g.id}')">🗑️</button>
+      </div>`;
+    }
+  });
+  h+='</div>';
+  document.getElementById('pg-guruhlar').innerHTML=h;
+}
+
+// GURUH ICHKI
+function renderGuruhIchki(){
+  const g=groups.find(x=>x.name===activeGroup);
+  const col=g?g.color:'#3b82f6';
+  const list=getGrpStudents(activeGroup);
+  let h='';
+  h+=`<div class="grp-header" style="background:linear-gradient(135deg,${col}99,${col}55)">
+    <div style="width:44px;height:44px;border-radius:11px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">👥</div>
+    <div>
+      <div style="font-size:17px;font-weight:800">${activeGroup}</div>
+      <div style="font-size:12px;opacity:.8;margin-top:2px">👨‍🏫 ${g?g.teacher||'—':'—'} · ${list.length} o'quvchi</div>
+    </div>
+  </div>`;
+
+  // Xona jadvali ko'rinishi (ustoz uchun)
+  const guruhJadval=jadvallar.filter(j=>j.guruhNom===activeGroup);
+  if(guruhJadval.length){
+    h+=`<div style="background:#1e293b;border:1px solid #2d3f55;border-radius:11px;padding:12px;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:700;color:#3b82f6;margin-bottom:8px">🚪 Dars xonasi va vaqti</div>`;
+    guruhJadval.forEach(j=>{
+      h+=`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1e2d40">
+        <span style="font-size:16px">🚪</span>
+        <div>
+          <div style="font-size:13px;font-weight:700">${j.xonaNom||'—'}${j.subGroup?` <span style="font-size:11px;color:#94a3b8;font-weight:400">(${j.subGroup})</span>`:''}</div>
+          <div style="font-size:11px;color:#fbbf24">⏰ ${j.boshlanish}-${j.tugash}</div>
+          <div style="margin-top:3px">${(j.kunlar||[]).map(k=>`<span class="kun-chip">${KUN_NOMI[k]||k}</span>`).join('')}</div>
+        </div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+
+  h+=mbar();
+  const tK=list.reduce((a,s)=>a+cntK(s.id),0);
+  const tKm=list.reduce((a,s)=>a+cntKm(s.id),0);
+  const paidL=list.filter(s=>isPaidFull(s.id));
+  const tIn=list.reduce((a,s)=>a+getPay(s.id).paidAmount,0);
+  const totalDebt=list.reduce((a,s)=>a+debtOf(s.id),0);
+  h+=`<div class="srow">
+    <div class="sbox"><div class="snum" style="color:#60a5fa">${list.length}</div><div class="slbl">O'quvchi</div></div>
+    <div class="sbox"><div class="snum" style="color:#4ade80">${tK}</div><div class="slbl">Keldi</div></div>
+    <div class="sbox"><div class="snum" style="color:#f87171">${tKm}</div><div class="slbl">Kelmadi</div></div>
+    <div class="sbox"><div class="snum" style="color:#4ade80">${paidL.length}</div><div class="slbl">To'ladi</div></div>
+    <div class="sbox"><div class="snum" style="color:#fbbf24;font-size:16px">${(tIn/1000).toFixed(0)}K</div><div class="slbl">Tushum</div></div>
+    ${isAdmin()?`<div class="sbox"><div class="snum" style="color:#f87171;font-size:16px">${(totalDebt/1000).toFixed(0)}K</div><div class="slbl">Qarzdorlik</div></div>`:''}
+  </div>`;
+  h+=`<div class="inner-tabs">
+    <div class="inner-tab on">📅 Davomat</div>
+  </div>`;
+  if(isAdmin())h+=`<button class="btn btn-blue btn-block" style="margin-bottom:12px" onclick="openSM('${activeGroup}')">➕ Yangi o'quvchi qo'shish</button>`;
+  if(!list.length){h+='<div class="empty"><div class="ei">👤</div>Bu guruhda o\'quvchi yo\'q</div>';document.getElementById('pg-guruh-ichki').innerHTML=h;return;}
+
+  if(activeInnerTab==='davomat'){
+    // O'quvchilarni subguruh bo'yicha guruhlash
+    const subGroups={};
+    list.forEach(s=>{
+      const key=s.subGroup?(s.subGroup+(s.subTime?' · ⏰'+s.subTime:'')):'__asosiy__';
+      if(!subGroups[key])subGroups[key]=[];
+      subGroups[key].push(s);
+    });
+    const keys=Object.keys(subGroups);
+    const hasSubGroups=keys.length>1||!keys.includes('__asosiy__');
+
+    keys.forEach(key=>{
+      const subList=subGroups[key];
+      if(hasSubGroups){
+        const label=key==='__asosiy__'?'Asosiy guruh':key;
+        const subK=subList.reduce((a,s)=>a+cntK(s.id),0);
+        const subKm=subList.reduce((a,s)=>a+cntKm(s.id),0);
+        let roomBtn='';
+        if(key!=='__asosiy__'){
+          const pinId='sp'+(_subPinSeq++);
+          window._subPinData[pinId]={guruhId:g?g.id:null,guruhNom:activeGroup,subGroup:subList[0].subGroup,subTime:subList[0].subTime||'',subKunlar:Array.isArray(subList[0].subKunlar)?subList[0].subKunlar:[]};
+          const subJ=g?jadvallar.find(j=>j.guruhId===g.id&&j.subGroup===subList[0].subGroup):null;
+          roomBtn=`<button class="nbtn" style="font-size:11px;padding:4px 9px;background:${subJ?'#16a34a33':'#1e293b'};border:1px solid ${subJ?'#16a34a':'#2d3f55'};border-radius:8px;color:${subJ?'#4ade80':'#94a3b8'};margin-top:6px" onclick="event.stopPropagation();openSubXona('${pinId}')">${subJ?`🚪 ${subJ.xonaNom}`:'🏠 Xona belgilash'}</button>`;
+        }
+        h+=`<div style="background:linear-gradient(90deg,${col}33,${col}11);border:1px solid ${col}55;border-radius:11px;padding:10px 14px;margin-bottom:10px;margin-top:4px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:13px;font-weight:800;color:${col}">📌 ${label}</div>
+            <div style="display:flex;gap:8px;font-size:11px">
+              <span style="color:#4ade80">✅${subK}</span>
+              <span style="color:#f87171">❌${subKm}</span>
+              <span style="color:#60a5fa">👤${subList.length}</span>
+            </div>
+          </div>
+          ${roomBtn}
+        </div>`;
+      }
+      subList.forEach(s=>{
+        const k=cntK(s.id),km=cntKm(s.id);
+        const ini=s.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+        const op=openC['d'+s.id],bt=openBT[s.id]||'days';
+        let dh='';
+        for(let d=1;d<=dim();d++){const v=getA(s.id,d);const cls=v==='k'?'k':v==='km'?'km':'';const ic=v==='k'?'✅':v==='km'?'❌':'·';dh+=`<button class="dbtn ${cls}" onclick="setAtt('${s.id}',${d})"><span class="dn">${d}</span><span class="di">${ic}</span></button>`;}
+        h+=`<div class="card" data-sid="${s.id}"><div class="card-head" onclick="togC('d${s.id}')">
+          <div class="ava" style="background:${col}">${ini}</div>
+          <div class="cinfo"><div class="cname">${s.name}</div>${s.subTime?`<div class="csub">⏰ ${s.subTime}</div>`:''}<div class="csub-phone">${s.phone||'—'}</div></div>
+          <div class="cright"><span class="pill p-blue">${k} kun</span><span class="arr ${op?'up':''}">▼</span></div>
+        </div>
+        <div class="card-body ${op?'on':''}">
+          <div class="btabs">
+            <div class="btab ${bt==='days'?'on':''}" onclick="event.stopPropagation();togBT('${s.id}','days')">📅 Kunlar</div>
+            <div class="btab ${bt==='info'?'on':''}" onclick="event.stopPropagation();togBT('${s.id}','info')">ℹ️ Ma'lumot</div>
+          </div>
+          <div class="bsec ${bt==='days'?'on':''}">
+            <div style="margin-bottom:10px">
+              <div style="font-size:12px;color:#64748b;margin-bottom:8px">Bugun (${new Date().getDate()}-kun) tez belgilash:</div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-green" style="flex:1" onclick="event.stopPropagation();setAttDirect('${s.id}',${new Date().getDate()},'k')">✅ Keldi</button>
+                <button class="btn btn-red" style="flex:1" onclick="event.stopPropagation();setAttDirect('${s.id}',${new Date().getDate()},'km')">❌ Kelmadi</button>
+              </div>
+            </div>
+            <div style="font-size:12px;color:#64748b;margin-bottom:6px">Oylik davomat (bosib o'zgartirish):</div>
+            <div class="dgrid">${dh}</div>
+            <div style="margin-top:9px;font-size:12px;color:#64748b">✅ <b style="color:#4ade80">${k}</b> &nbsp;❌ <b style="color:#f87171">${km}</b></div>
+          </div>
+          <div class="bsec ${bt==='info'?'on':''}">
+            <div class="irow"><span class="ikey">Telefon</span><span>${s.phone||'—'}</span></div>
+            <div class="irow"><span class="ikey">Yoshi</span><span>${s.age||'—'}</span></div>
+            <div class="irow"><span class="ikey">Kichik guruh</span><span>${s.subGroup||'—'}</span></div>
+            <div class="irow"><span class="ikey">Dars vaqti</span><span>${s.subTime||'—'}</span></div>
+            <div class="irow"><span class="ikey">Ustoz</span><span>${s.teacher||'—'}</span></div>
+            <div class="irow"><span class="ikey">Oylik</span><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">${isAdmin()?`<span>${feeOf(s.id).toLocaleString()} so'm</span>${debtOf(s.id)>0?`<span style="color:#f87171;font-size:11px">(qarz: ${debtOf(s.id).toLocaleString()})</span>`:`<span style="color:#4ade80;font-size:11px">✅ To'langan</span>`}<button onclick="event.stopPropagation();openPayModal('${s.id}')" class="btn btn-blue" style="font-size:11px;padding:4px 10px">💳 To'lash</button>`:(isPaidFull(s.id)?`<span style="color:#4ade80;font-size:12px">✅ To'langan</span>`:`<span style="color:#f87171;font-size:12px">⏳ Qarzdorlik bor</span>`)}</span></div>
+            <div class="irow"><span class="ikey">Yuzi</span><span>${s.faceImage?'✅ Qo\'shilgan':'❌ Yo\'q'}</span></div>
+            ${isAdmin()?`<div class="btn-row"><button class="btn btn-purple" onclick="event.stopPropagation();editS('${s.id}')">✏️ Tahrirlash</button><button class="btn btn-red" onclick="event.stopPropagation();delS('${s.id}')">🗑️</button></div><button class="btn btn-blue btn-block" style="margin-top:6px" onclick="event.stopPropagation();openFaceModal('${s.id}','${s.name.replace(/'/g,'')}')">📷 ${s.faceImage?'Yuzni yangilash':'Yuz qo\'shish'}</button>`:''}
+          </div>
+        </div></div>`;
+      });
+    });
+  }
+
+  if(activeInnerTab==='tolov'){
+    // Subguruh bo'yicha guruhlash
+    const subGroups2={};
+    list.forEach(s=>{
+      const key=s.subGroup?(s.subGroup+(s.subTime?' · ⏰'+s.subTime:'')):'__asosiy__';
+      if(!subGroups2[key])subGroups2[key]=[];
+      subGroups2[key].push(s);
+    });
+    const keys2=Object.keys(subGroups2);
+    const hasSub2=keys2.length>1||!keys2.includes('__asosiy__');
+
+    keys2.forEach(key=>{
+      const subList=subGroups2[key];
+      if(hasSub2){
+        const label=key==='__asosiy__'?'Asosiy guruh':key;
+        const paidCnt=subList.filter(s=>isPaidFull(s.id)).length;
+        h+=`<div style="background:linear-gradient(90deg,${col}33,${col}11);border:1px solid ${col}55;border-radius:11px;padding:10px 14px;margin-bottom:10px;margin-top:4px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:13px;font-weight:800;color:${col}">📌 ${label}</div>
+            <div style="display:flex;gap:8px;font-size:11px">
+              <span style="color:#4ade80">✅${paidCnt}</span>
+              <span style="color:#f87171">❌${subList.length-paidCnt}</span>
+              <span style="color:#60a5fa">👤${subList.length}</span>
+            </div>
+          </div>
+        </div>`;
+      }
+      subList.forEach(s=>{
+        const full=isPaidFull(s.id),debt=debtOf(s.id),p=getPay(s.id);
+        const ini=s.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+        const op=openC['t'+s.id];
+        h+=`<div class="card"><div class="card-head" onclick="togC('t${s.id}')">
+          <div class="ava" style="background:${col}">${ini}</div>
+          <div class="cinfo"><div class="cname">${s.name}</div><div class="csub">${s.subTime?'⏰ '+s.subTime+(isAdmin()?' · ':''):''}${isAdmin()?feeOf(s.id).toLocaleString()+' so\'m':''}</div></div>
+          <div class="cright"><span class="pill ${full?'p-green':'p-red'}">${full?"✅ To'ladi":"⏳ Yo'q"}</span><span class="arr ${op?'up':''}">▼</span></div>
+        </div>
+        <div class="card-body ${op?'on':''}">
+          <div style="padding:13px">
+            <div class="pbox">${full?`<div><div style="font-size:11px;color:#64748b">To'langan sana</div><div style="font-size:12px">${p.date}</div></div><div class="pval" style="color:#4ade80">✅ To'ladi</div>`:`<div style="font-size:13px;color:#64748b">Holati</div><div class="pval" style="color:#f87171">${isAdmin()?`Qarz: ${debt.toLocaleString()}`:"⏳ To'lamadi"}</div>`}</div>
+            ${isAdmin()?`<button class="btn btn-blue btn-block" onclick="event.stopPropagation();openPayModal('${s.id}')">💳 To'lash</button>`:``}
+            <textarea class="tnote" id="nt-${s.id}" rows="2" placeholder="Izoh..." onclick="event.stopPropagation()">${p.note||''}</textarea>
+            ${isAdmin()?`<button class="btn btn-purple btn-block" onclick="event.stopPropagation();saveNote('${s.id}')">💾 Saqlash</button>`:''}
+          </div>
+        </div></div>`;
+      });
+    });
+  }
+  document.getElementById('pg-guruh-ichki').innerHTML=h;
+}
+
+// ATTENDANCE
+window.setAttDirect=async function(sid,day,val){
+  if(!att[sid])att[sid]={};
+  if(att[sid][day]===val)delete att[sid][day];
+  else att[sid][day]=val;
+  try{await setDoc(doc(db,'att_'+mk(),sid),att[sid]||{});toast(val==='k'?'✅ Keldi belgilandi':'❌ Kelmadi belgilandi');renderGuruhIchki();}
+  catch(e){toast('❗ '+e.message);}
+};
+
+window.setAtt=async function(sid,day){
+  const cur=getA(sid,day);
+  const next=!cur?'k':cur==='k'?'km':null;
+  if(!att[sid])att[sid]={};
+  if(next)att[sid][day]=next;else delete att[sid][day];
+  try{await setDoc(doc(db,'att_'+mk(),sid),att[sid]||{});renderGuruhIchki();}
+  catch(e){toast('❗ '+e.message);}
+};
+
+let payTargetSid=null;
+window.openPayModal=function(sid){
+  if(!isAdmin()){toast("❗ Faqat admin to'lovni belgilaydi");return;}
+  const s=students.find(x=>x.id===sid);if(!s)return;
+  payTargetSid=sid;
+  const fee=feeOf(sid),p=getPay(sid),debt=debtOf(sid);
+  document.getElementById('pay-modal-title').textContent=`💳 ${s.name} — to'lov`;
+  document.getElementById('pay-fee-info').innerHTML=`Oylik to'lov: <b>${fee.toLocaleString()} so'm</b><br>Hozir to'langan: <b style="color:#4ade80">${p.paidAmount.toLocaleString()} so'm</b><br>${debt>0?`Qarzdorlik: <b style="color:#f87171">${debt.toLocaleString()} so'm</b>`:`<b style="color:#4ade80">✅ To'langan</b>`}`;
+  document.getElementById('pay-amount').value=debt>0?debt:'';
+  document.getElementById('pay-modal').classList.remove('hide');
+};
+window.savePayAmount=async function(){
+  const sid=payTargetSid;if(!sid)return;
+  const addAmt=parseInt(String(document.getElementById('pay-amount').value).replace(/\D/g,''))||0;
+  if(addAmt<=0){toast("❗ Summani kiriting");return;}
+  const cur=getPay(sid);
+  const data={paidAmount:cur.paidAmount+addAmt,date:new Date().toLocaleDateString('uz-UZ'),note:cur.note||''};
+  try{
+    await setDoc(doc(db,'pay_'+mk(),sid),data);
+    pay[sid]=data;
+    toast("✅ To'lov qabul qilindi");
+    closeModal('pay-modal');
+    if(activeGroup)renderGuruhIchki();else render();
+  }catch(e){toast('❗ '+e.message);}
+};
+window.resetPayAmount=async function(){
+  const sid=payTargetSid;if(!sid)return;
+  if(!confirm("To'lovni butunlay tozalashni tasdiqlaysizmi?"))return;
+  const cur=getPay(sid);
+  const data={paidAmount:0,date:'',note:cur.note||''};
+  try{
+    await setDoc(doc(db,'pay_'+mk(),sid),data);
+    pay[sid]=data;
+    toast("🗑️ Tozalandi");
+    closeModal('pay-modal');
+    if(activeGroup)renderGuruhIchki();else render();
+  }catch(e){toast('❗ '+e.message);}
+};
+
+window.saveNote=async function(sid){
+  const el=document.getElementById('nt-'+sid);if(!el)return;
+  const cur=getPay(sid);
+  pay[sid]={paidAmount:cur.paidAmount,date:cur.date,note:el.value};
+  try{await setDoc(doc(db,'pay_'+mk(),sid),pay[sid]);toast('💾 Saqlandi');}
+  catch(e){toast('❗ '+e.message);}
+};
+
+// XODIMLAR
+function renderXod(){
+  let h=`<button class="btn btn-blue btn-block" style="margin-bottom:14px" onclick="openXM()">➕ Yangi xodim qo'shish</button>`;
+  if(!xodimlar.length){h+='<div class="empty"><div class="ei">👤</div>Xodimlar yo\'q</div>';document.getElementById('pg-xod').innerHTML=h;return;}
+  xodimlar.forEach(x=>{
+    const rc=x.role==='admin'?'#fbbf24':'#60a5fa',rt=x.role==='admin'?'👑 Admin':'👨‍🏫 Ustoz';
+    const kunlar=Array.isArray(x.ishKunlar)?x.ishKunlar:['Du','Se','Ch','Pa','Ju'];
+    const kunNomlar={Du:'Du',Se:'Se',Ch:'Ch',Pa:'Pa',Ju:'Ju',Sh:'Sh',Ya:'Ya'};
+    h+=`<div class="xcard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div>
+          <div style="font-size:15px;font-weight:700">${x.name}</div>
+          <div style="font-size:12px;color:#64748b;margin-top:3px">@${x.login}</div>
+        </div>
+        <span style="padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:${rc}22;color:${rc};border:1px solid ${rc}44">${rt}</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:12px;color:#64748b">⏰ ${x.ishBosh||'09:00'} — ${x.ishTug||'18:00'}</span>
+        <span style="font-size:12px;color:#64748b">${kunlar.map(k=>kunNomlar[k]||k).join(', ')}</span>
+        <span style="font-size:12px;${x.faceImage?'color:#4ade80':'color:#f87171'}">${x.faceImage?'📷 Yuz bor':'📷 Yuz yo\'q'}</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-purple" onclick="editX('${x.id}')">✏️ Tahrirlash</button>
+        <button class="btn btn-blue" onclick="openFaceModalX('${x.id}','${x.name.replace(/'/g,'')}')">📷 ${x.faceImage?'Yangilash':'Yuz qo\'shish'}</button>
+        <button class="btn btn-red" onclick="delX('${x.id}')">🗑️</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('pg-xod').innerHTML=h;
+}
+
+// HISOBOT
+function renderRep(){
+  const act=students.filter(s=>s.status==='active');
+  const pL=act.filter(s=>isPaidFull(s.id));
+  const tIn=act.reduce((a,s)=>a+getPay(s.id).paidAmount,0);
+  const exp=act.reduce((a,s)=>a+(s.fee||0),0);
+
+  let h=mbar();
+
+  // Umumiy moliya
+  h+=`<div class="rcard"><div class="rtitle">📊 Umumiy — ${mlbl()}</div>
+    <div class="irow"><span class="ikey">Jami o'quvchi</span><b>${act.length} ta</b></div>
+    <div class="irow"><span class="ikey">To'lagan</span><b style="color:#4ade80">${pL.length} ta</b></div>
+    <div class="irow"><span class="ikey">To'lamagan</span><b style="color:#f87171">${act.length-pL.length} ta</b></div>
+    <div class="irow"><span class="ikey">Jami tushum</span><b style="color:#4ade80">${tIn.toLocaleString()} so'm</b></div>
+    <div class="irow"><span class="ikey">Kutilgan</span><b style="color:#a78bfa">${exp.toLocaleString()} so'm</b></div>
+  </div>`;
+
+  // Guruh bo'yicha davomat
+  const myGroups=isAdmin()?groups:groups.filter(g=>{
+    const ug=Array.isArray(CU.groups)?CU.groups:(CU.group?[CU.group]:[]);
+    return ug.includes(g.name);
+  });
+
+  myGroups.forEach(g=>{
+    const gS=act.filter(s=>s.group===g.name);
+    if(!gS.length)return;
+
+    const totalDays=dim();
+    h+=`<div class="rcard">
+      <div class="rtitle" style="color:${g.color}">${g.name} — Davomat</div>
+      <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:4px;margin-bottom:8px;font-size:11px;color:#64748b;padding:0 4px">
+        <span>Ism</span><span>✅Keldi</span><span>❌Kelmadi</span><span>⏳Yo'q</span>
+      </div>`;
+
+    gS.forEach(s=>{
+      const k=cntK(s.id);
+      const km=cntKm(s.id);
+      const yoq=totalDays-k-km;
+      const kPct=Math.round(k/totalDays*100);
+
+      h+=`<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:4px;padding:7px 4px;border-bottom:1px solid #1e2d40;align-items:center">
+        <div>
+          <div style="font-size:13px;font-weight:600">${s.name}</div>
+          <div style="height:4px;background:#1e2d40;border-radius:2px;margin-top:4px;width:100%">
+            <div style="height:4px;background:${kPct>=80?'#4ade80':kPct>=50?'#fbbf24':'#f87171'};border-radius:2px;width:${kPct}%"></div>
+          </div>
+        </div>
+        <span style="color:#4ade80;font-weight:700;font-size:13px;text-align:center">${k}</span>
+        <span style="color:#f87171;font-weight:700;font-size:13px;text-align:center">${km}</span>
+        <span style="color:#64748b;font-weight:700;font-size:13px;text-align:center">${yoq}</span>
+      </div>`;
+    });
+
+    h+=`</div>`;
+  });
+
+  document.getElementById('pg-rep').innerHTML=h;
+}
+
+window.togC=k=>{openC[k]=!openC[k];render();};
+window.togBT=(id,t)=>{openBT[id]=t;render();};
+
+// STUDENT CRUD
+window.openSM=function(grp){
+  eSid=null;document.getElementById('sm-title').textContent="➕ Yangi o'quvchi";
+  ['s-name','s-phone','s-age','s-teacher','s-fee','s-subgroup','s-subtime'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('s-status').value='active';
+  document.querySelectorAll('#s-kunlar input').forEach(c=>{c.checked=false;});
+  const sel=document.getElementById('s-group');sel.innerHTML='';
+  groups.forEach(g=>sel.innerHTML+=`<option value="${g.name}"${g.name===(grp||activeGroup)?' selected':''}>${g.name}</option>`);
+  document.getElementById('sm').classList.remove('hide');
+};
+window.editS=function(id){
+  const s=students.find(x=>x.id===id);if(!s)return;
+  eSid=id;document.getElementById('sm-title').textContent="✏️ O'quvchini tahrirlash";
+  document.getElementById('s-name').value=s.name||'';document.getElementById('s-phone').value='';
+  if(s.phone){const ph=document.getElementById('s-phone');ph.value=s.phone.replace(/\D/g,'');formatPhoneInput(ph);}
+  document.getElementById('s-age').value=s.age||'';document.getElementById('s-teacher').value=s.teacher||'';
+  document.getElementById('s-fee').value=s.fee?fmtFee(String(s.fee)):'';document.getElementById('s-status').value=s.status||'active';
+  document.getElementById('s-subgroup').value=s.subGroup||'';document.getElementById('s-subtime').value=s.subTime||'';
+  const kunlar=Array.isArray(s.subKunlar)?s.subKunlar:[];
+  document.querySelectorAll('#s-kunlar input').forEach(c=>{c.checked=kunlar.includes(c.value);});
+  const sel=document.getElementById('s-group');sel.innerHTML='';
+  groups.forEach(g=>sel.innerHTML+=`<option value="${g.name}"${s.group===g.name?' selected':''}>${g.name}</option>`);
+  document.getElementById('sm').classList.remove('hide');
+};
+let _savingStudent=false;
+window.saveStudent=async function(){
+  if(_savingStudent)return;
+  const name=document.getElementById('s-name').value.trim();if(!name){toast('❗ Ism shart!');return;}
+  const grp=document.getElementById('s-group').value;if(!grp){toast('❗ Guruh tanlang!');return;}
+  const kunlar=Array.from(document.querySelectorAll('#s-kunlar input:checked')).map(c=>c.value);
+  // Agar dars kuni belgilanmagan bo'lsa, o'quvchi "Asosiy guruh"ga qo'shiladi (kichik guruh bo'sh qoldiriladi)
+  const subgroupTxt=kunlar.length?document.getElementById('s-subgroup').value.trim():'';
+  const data={name,group:grp,phone:document.getElementById('s-phone').value.trim(),age:parseInt(document.getElementById('s-age').value)||0,teacher:document.getElementById('s-teacher').value.trim(),fee:parseInt(document.getElementById('s-fee').value.replace(/\D/g,''))||0,status:document.getElementById('s-status').value,subGroup:subgroupTxt,subTime:kunlar.length?document.getElementById('s-subtime').value.trim():'',subKunlar:kunlar.length?kunlar:[]};
+  _savingStudent=true;
+  try{
+    if(eSid){await updateDoc(doc(db,'students',eSid),data);const i=students.findIndex(s=>s.id===eSid);if(i>-1)students[i]={...students[i],...data};toast("✅ Yangilandi");}
+    else{const r=await addDoc(collection(db,'students'),data);students.push({id:r.id,...data});toast("✅ Qo'shildi");}
+    closeModal('sm');render();
+  }catch(e){toast('❗ '+e.message);}
+  finally{_savingStudent=false;}
+};
+window.delS=async function(id){
+  if(!confirm("O'chirishni tasdiqlaysizmi?"))return;
+  try{await deleteDoc(doc(db,'students',id));students=students.filter(s=>s.id!==id);toast("🗑️ O'chirildi");render();}
+  catch(e){toast('❗ '+e.message);}
+};
+
+// GROUP CRUD
+function fillGXonaSelect(selectedXonaId){
+  const xs=document.getElementById('g-xona');
+  xs.innerHTML='<option value="">— Tanlanmagan —</option>';
+  xonalar.forEach(x=>xs.innerHTML+=`<option value="${x.id}|${x.nom}">${x.nom}</option>`);
+  if(selectedXonaId){
+    const opt=Array.from(xs.options).find(o=>o.value.split('|')[0]===selectedXonaId);
+    if(opt)xs.value=opt.value;
+  }
+}
+function groupFromJadval(guruhId){
+  return jadvallar.find(j=>j.guruhId===guruhId&&j.fromGroup&&!j.subGroup);
+}
+function parseTimeRange(txt){
+  if(!txt)return[null,null];
+  const m=String(txt).match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+  return m?[m[1],m[2]]:[null,null];
+}
+function fillSxXonaSelect(selectedXonaId){
+  const xs=document.getElementById('sx-xona');
+  xs.innerHTML='<option value="">— Tanlanmagan —</option>';
+  xonalar.forEach(x=>xs.innerHTML+=`<option value="${x.id}|${x.nom}">${x.nom}</option>`);
+  if(selectedXonaId){
+    const opt=Array.from(xs.options).find(o=>o.value.split('|')[0]===selectedXonaId);
+    if(opt)xs.value=opt.value;
+  }
+}
+window._subPinData={};
+let _subPinSeq=0;
+let curSubPin=null;
+window.openSubXona=function(pinId){
+  const d=window._subPinData[pinId];if(!d||!d.guruhId){toast("❗ Avval guruhni saqlang");return;}
+  curSubPin=d;
+  document.getElementById('sx-title').textContent=`🏠 ${d.subGroup} — xona belgilash`;
+  const existing=jadvallar.find(j=>j.guruhId===d.guruhId&&j.subGroup===d.subGroup);
+  fillSxXonaSelect(existing?existing.xonaId:null);
+  const[pb,pt]=parseTimeRange(d.subTime);
+  document.getElementById('sx-bosh').value=existing?existing.boshlanish:(pb||'09:00');
+  document.getElementById('sx-tug').value=existing?existing.tugash:(pt||'11:00');
+  const kunlar=existing?(existing.kunlar||[]):((d.subKunlar&&d.subKunlar.length)?d.subKunlar:['Du','Se','Ch','Pa','Ju']);
+  document.querySelectorAll('#sx-kunlar input').forEach(c=>{c.checked=kunlar.includes(c.value);});
+  document.getElementById('subxona-modal').classList.remove('hide');
+};
+function fillJxXonaSelect(selectedXonaId){
+  const xs=document.getElementById('jx-xona');
+  xs.innerHTML='<option value="">— Tanlanmagan —</option>';
+  xonalar.forEach(x=>xs.innerHTML+=`<option value="${x.id}|${x.nom}">${x.nom}</option>`);
+  if(selectedXonaId){const opt=Array.from(xs.options).find(o=>o.value.split('|')[0]===selectedXonaId);if(opt)xs.value=opt.value;}
+}
+function fillJxGuruhSelect(selectedGid){
+  const gs=document.getElementById('jx-guruh');
+  gs.innerHTML='<option value="">— Tanlang —</option>';
+  groups.forEach(g=>gs.innerHTML+=`<option value="${g.id}|${g.name}">${g.name}</option>`);
+  if(selectedGid){const opt=Array.from(gs.options).find(o=>o.value.split('|')[0]===selectedGid);if(opt)gs.value=opt.value;}
+}
+let curJX=null;
+window.openJX=function(jid,xonaId,dayKey,hour){
+  if(!isAdmin())return;
+  const existing=jid?jadvallar.find(j=>j.id===jid):null;
+  curJX={editId:existing?existing.id:null};
+  document.getElementById('jx-title').textContent=existing?'✏️ Darsni tahrirlash':"➕ Yangi dars qo'shish";
+  fillJxGuruhSelect(existing?existing.guruhId:null);
+  fillJxXonaSelect(existing?existing.xonaId:xonaId);
+  document.getElementById('jx-bosh').value=existing?existing.boshlanish:(hour!=null?String(hour).padStart(2,'0')+':00':'09:00');
+  document.getElementById('jx-tug').value=existing?existing.tugash:(hour!=null?String(Math.min(hour+2,23)).padStart(2,'0')+':00':'11:00');
+  const kunlar=existing?(existing.kunlar||[]):(dayKey?[dayKey]:['Du','Se','Ch','Pa','Ju']);
+  document.querySelectorAll('#jx-kunlar input').forEach(c=>{c.checked=kunlar.includes(c.value);});
+  document.getElementById('jx-modal').classList.remove('hide');
+};
+window.saveJX=async function(){
+  const gVal=document.getElementById('jx-guruh').value;
+  if(!gVal){toast('❗ Guruhni tanlang');return;}
+  const[guruhId,guruhNom]=gVal.split('|');
+  const xVal=document.getElementById('jx-xona').value;
+  if(!xVal){toast('❗ Xonani tanlang');return;}
+  const[xonaId,xonaNom]=xVal.split('|');
+  const bosh=document.getElementById('jx-bosh').value;
+  const tug=document.getElementById('jx-tug').value;
+  const kunlar=Array.from(document.querySelectorAll('#jx-kunlar input:checked')).map(c=>c.value);
+  if(!kunlar.length){toast('❗ Kamida bitta kun tanlang');return;}
+  const jData={guruhId,guruhNom,xonaId,xonaNom,kunlar,boshlanish:bosh,tugash:tug};
+  try{
+    if(curJX&&curJX.editId){
+      await updateDoc(doc(db,'jadval',curJX.editId),jData);
+      const i=jadvallar.findIndex(j=>j.id===curJX.editId);if(i>-1)jadvallar[i]={...jadvallar[i],...jData};
+      toast('✅ Yangilandi');
+    } else {
+      const r=await addDoc(collection(db,'jadval'),jData);
+      jadvallar.push({id:r.id,...jData});
+      toast("✅ Qo'shildi");
+    }
+    closeModal('jx-modal');renderXona();
+  }catch(e){toast('❗ '+e.message);}
+};
+window.deleteJX=async function(){
+  if(!curJX||!curJX.editId){closeModal('jx-modal');return;}
+  if(!confirm("Bu darsni o'chirishni tasdiqlaysizmi?"))return;
+  try{
+    await deleteDoc(doc(db,'jadval',curJX.editId));
+    jadvallar=jadvallar.filter(j=>j.id!==curJX.editId);
+    toast("🗑️ O'chirildi");
+    closeModal('jx-modal');renderXona();
+  }catch(e){toast('❗ '+e.message);}
+};
+window.saveSubXona=async function(){
+  if(!curSubPin)return;
+  const xVal=document.getElementById('sx-xona').value;
+  const bosh=document.getElementById('sx-bosh').value;
+  const tug=document.getElementById('sx-tug').value;
+  const kunlar=Array.from(document.querySelectorAll('#sx-kunlar input:checked')).map(c=>c.value);
+  const existing=jadvallar.find(j=>j.guruhId===curSubPin.guruhId&&j.subGroup===curSubPin.subGroup);
+  try{
+    if(xVal&&kunlar.length&&bosh&&tug){
+      const[xonaId,xonaNom]=xVal.split('|');
+      const jData={guruhId:curSubPin.guruhId,guruhNom:curSubPin.guruhNom,subGroup:curSubPin.subGroup,xonaId,xonaNom,kunlar,boshlanish:bosh,tugash:tug,fromGroup:true};
+      if(existing){await updateDoc(doc(db,'jadval',existing.id),jData);const i=jadvallar.findIndex(j=>j.id===existing.id);jadvallar[i]={...jadvallar[i],...jData};}
+      else{const r=await addDoc(collection(db,'jadval'),jData);jadvallar.push({id:r.id,...jData});}
+      toast('✅ Xona belgilandi');
+    } else if(existing){
+      await deleteDoc(doc(db,'jadval',existing.id));jadvallar=jadvallar.filter(j=>j.id!==existing.id);
+      toast("🗑️ Xona bekor qilindi");
+    }
+    closeModal('subxona-modal');render();
+  }catch(e){toast('❗ '+e.message);}
+};
+window.openGM=function(){
+  eGid=null;document.getElementById('gm-title').textContent='👥 Yangi guruh';
+  ['g-name','g-teacher'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('g-color').value='#3b82f6';
+  document.getElementById('g-bosh').value='09:00';document.getElementById('g-tug').value='11:00';
+  document.querySelectorAll('#g-kunlar input').forEach(c=>{c.checked=['Du','Se','Ch','Pa','Ju'].includes(c.value);});
+  fillGXonaSelect(null);
+  document.getElementById('gm').classList.remove('hide');
+};
+window.editG=function(id){
+  const g=groups.find(x=>x.id===id);if(!g)return;
+  eGid=id;document.getElementById('gm-title').textContent='✏️ Guruhni tahrirlash';
+  document.getElementById('g-name').value=g.name||'';
+  document.getElementById('g-teacher').value=g.teacher||'';document.getElementById('g-color').value=g.color||'#3b82f6';
+  const j=groupFromJadval(id);
+  fillGXonaSelect(j?j.xonaId:null);
+  document.getElementById('g-bosh').value=j?j.boshlanish:'09:00';
+  document.getElementById('g-tug').value=j?j.tugash:'11:00';
+  const kunlar=j?(j.kunlar||[]):['Du','Se','Ch','Pa','Ju'];
+  document.querySelectorAll('#g-kunlar input').forEach(c=>{c.checked=kunlar.includes(c.value);});
+  document.getElementById('gm').classList.remove('hide');
+};
+let _savingGroup=false;
+window.saveGroup=async function(){
+  if(_savingGroup)return;
+  const name=document.getElementById('g-name').value.trim();if(!name){toast('❗ Nom shart!');return;}
+  const bosh=document.getElementById('g-bosh').value;
+  const tug=document.getElementById('g-tug').value;
+  const timeText=(bosh&&tug)?`${bosh}-${tug}`:'';
+  const data={name,time:timeText,color:document.getElementById('g-color').value,teacher:document.getElementById('g-teacher').value.trim()};
+  _savingGroup=true;
+  try{
+    let guruhId=eGid;
+    if(eGid){await updateDoc(doc(db,'groups',eGid),data);const i=groups.findIndex(g=>g.id===eGid);if(i>-1)groups[i]={...groups[i],...data};toast('✅ Yangilandi');}
+    else{const r=await addDoc(collection(db,'groups'),data);guruhId=r.id;groups.push({id:r.id,...data});toast("✅ Qo'shildi");}
+
+    // Xona + dars kunlari + vaqtini avtomatik 'jadval' jamlanmasiga saqlash
+    const xVal=document.getElementById('g-xona').value;
+    const kunlar=Array.from(document.querySelectorAll('#g-kunlar input:checked')).map(c=>c.value);
+    const existingJ=groupFromJadval(guruhId);
+    if(xVal&&kunlar.length&&bosh&&tug){
+      const[xonaId,xonaNom]=xVal.split('|');
+      const jData={guruhId,guruhNom:name,xonaId,xonaNom,kunlar,boshlanish:bosh,tugash:tug,fromGroup:true};
+      if(existingJ){
+        await updateDoc(doc(db,'jadval',existingJ.id),jData);
+        const ji=jadvallar.findIndex(j=>j.id===existingJ.id);if(ji>-1)jadvallar[ji]={...jadvallar[ji],...jData};
+      } else {
+        const jr=await addDoc(collection(db,'jadval'),jData);
+        jadvallar.push({id:jr.id,...jData});
+      }
+    } else if(existingJ){
+      // Xona olib tashlangan bo'lsa — eski jadval yozuvini o'chiramiz
+      await deleteDoc(doc(db,'jadval',existingJ.id));
+      jadvallar=jadvallar.filter(j=>j.id!==existingJ.id);
+    }
+
+    closeModal('gm');render();
+  }catch(e){toast('❗ '+e.message);}
+  finally{_savingGroup=false;}
+};
+window.delG=async function(id){
+  if(!confirm("O'chirishni tasdiqlaysizmi?"))return;
+  try{
+    await deleteDoc(doc(db,'groups',id));groups=groups.filter(g=>g.id!==id);
+    const linkedAll=jadvallar.filter(j=>j.guruhId===id);
+    for(const lj of linkedAll){await deleteDoc(doc(db,'jadval',lj.id));}
+    jadvallar=jadvallar.filter(j=>j.guruhId!==id);
+    toast("🗑️ O'chirildi");render();
+  }
+  catch(e){toast('❗ '+e.message);}
+};
+
+// XODIM CRUD
+window.openXM=function(){
+  eXid=null;document.getElementById('xm-title').textContent='👤 Yangi xodim';
+  ['x-name','x-login','x-pass'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('x-role').value='ustoz';
+  document.getElementById('x-ish-bosh').value='09:00';
+  document.getElementById('x-ish-tug').value='18:00';
+  document.querySelectorAll('#x-kunlar input').forEach(c=>{c.checked=['Du','Se','Ch','Pa','Ju'].includes(c.value);});
+  const sel=document.getElementById('x-group');sel.innerHTML='';
+  groups.forEach(g=>sel.innerHTML+=`<option value="${g.name}">${g.name}</option>`);
+  document.getElementById('xm').classList.remove('hide');
+};
+window.editX=function(id){
+  const x=xodimlar.find(a=>a.id===id);if(!x)return;
+  eXid=id;document.getElementById('xm-title').textContent='✏️ Xodimni tahrirlash';
+  document.getElementById('x-name').value=x.name||'';document.getElementById('x-login').value=x.login||'';
+  document.getElementById('x-pass').value='';document.getElementById('x-role').value=x.role||'ustoz';
+  document.getElementById('x-ish-bosh').value=x.ishBosh||'09:00';
+  document.getElementById('x-ish-tug').value=x.ishTug||'18:00';
+  const xIshKunlar=Array.isArray(x.ishKunlar)?x.ishKunlar:['Du','Se','Ch','Pa','Ju'];
+  document.querySelectorAll('#x-kunlar input').forEach(c=>{c.checked=xIshKunlar.includes(c.value);});
+  const sel=document.getElementById('x-group');sel.innerHTML='';
+  groups.forEach(g=>{const ug=Array.isArray(x.groups)?x.groups:(x.group?[x.group]:[]);sel.innerHTML+=`<option value="${g.name}"${ug.includes(g.name)?' selected':''}>${g.name}</option>`;});
+  document.getElementById('xm').classList.remove('hide');
+};
+let _savingXodim=false;
+window.saveXodim=async function(){
+  if(_savingXodim)return;
+  const name=document.getElementById('x-name').value.trim(),login=document.getElementById('x-login').value.trim(),pass=document.getElementById('x-pass').value.trim();
+  if(!name||!login){toast('❗ Ism va login shart!');return;}
+  if(!eXid&&!pass){toast('❗ Parol shart!');return;}
+  const selG=document.getElementById('x-group');const selGroups=Array.from(selG.selectedOptions).map(o=>o.value);
+  const ishKunlar=Array.from(document.querySelectorAll('#x-kunlar input:checked')).map(c=>c.value);
+  const data={name,login,role:document.getElementById('x-role').value,groups:selGroups,group:selGroups[0]||'',ishBosh:document.getElementById('x-ish-bosh').value||'09:00',ishTug:document.getElementById('x-ish-tug').value||'18:00',ishKunlar};
+  if(pass)data.password=pass;
+  _savingXodim=true;
+  try{
+    if(eXid){await updateDoc(doc(db,'xodimlar',eXid),data);const i=xodimlar.findIndex(x=>x.id===eXid);if(i>-1)xodimlar[i]={...xodimlar[i],...data};toast('✅ Yangilandi');}
+    else{const r=await addDoc(collection(db,'xodimlar'),data);xodimlar.push({id:r.id,...data});toast("✅ Xodim qo'shildi");}
+    closeModal('xm');render();
+  }catch(e){toast('❗ '+e.message);}
+  finally{_savingXodim=false;}
+};
+window.delX=async function(id){
+  if(!confirm("Xodimni o'chirishni tasdiqlaysizmi?"))return;
+  try{await deleteDoc(doc(db,'xodimlar',id));xodimlar=xodimlar.filter(x=>x.id!==id);toast("🗑️ O'chirildi");render();}
+  catch(e){toast('❗ '+e.message);}
+};
+
+// XONALAR
+let xonaViewMode='kun';
+let xonaSelectedDay=null; // null = bugungi haqiqiy kun, aks holda 'Du'..'Ya'
+window.setXonaView=function(m){xonaViewMode=m;renderXona();};
+window.selectXonaDay=function(dk){xonaSelectedDay=dk;xonaViewMode='kun';renderXona();window.scrollTo({top:0,behavior:'smooth'});};
+window.resetXonaToday=function(){xonaSelectedDay=null;renderXona();};
+window.renderXona=async function(){
+  if(!xonalar.length&&!jadvallar.length)await loadXonalar();
+  const pg=document.getElementById('pg-xona');
+  const now=new Date();
+  const kunlar_arr=['Ya','Du','Se','Ch','Pa','Ju','Sh'];
+  const bugun=kunlar_arr[now.getDay()];
+  const kunNomiLong=['Yakshanba','Dushanba','Seshanba','Chorshanba','Payshanba','Juma','Shanba'];
+  const kunNomiLongMap={Du:'Dushanba',Se:'Seshanba',Ch:'Chorshanba',Pa:'Payshanba',Ju:'Juma',Sh:'Shanba',Ya:'Yakshanba'};
+  const haftaTartib=['Du','Se','Ch','Pa','Ju','Sh','Ya'];
+  const dispDay=xonaSelectedDay||bugun;
+  const isCustomDay=xonaSelectedDay&&xonaSelectedDay!==bugun;
+
+  // Xonalarni raqam tartibida saralash (1,2,3,4... aralashmasin)
+  const numOf=nom=>{const m=String(nom||'').match(/\d+/);return m?parseInt(m[0]):9999;};
+  const xonalarSorted=[...xonalar].sort((a,b)=>numOf(a.nom)-numOf(b.nom)||String(a.nom).localeCompare(String(b.nom)));
+
+  let h='';
+  // Dashboard — Kunlik/Haftalik almashtirgich
+  h+=`<div style="background:#1e293b;border:1px solid #2d3f55;border-radius:14px;padding:14px;margin-bottom:14px">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn ${xonaViewMode==='kun'?'btn-blue':'btn-gray'}" style="flex:1;font-size:12px;padding:8px" onclick="setXonaView('kun')">📅 Kunlik</button>
+      <button class="btn ${xonaViewMode==='hafta'?'btn-blue':'btn-gray'}" style="flex:1;font-size:12px;padding:8px" onclick="setXonaView('hafta')">🗓️ Haftalik</button>
+    </div>`;
+  if(xonaViewMode==='kun'){
+    if(isCustomDay){
+      h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:700;color:#3b82f6">📊 Holat — ${kunNomiLongMap[dispDay]}</div>
+        <button class="nbtn" style="font-size:11px;padding:4px 10px;background:#1e293b;border:1px solid #2d3f55;border-radius:8px;color:#94a3b8" onclick="resetXonaToday()">↺ Bugunga qaytish</button>
+      </div>`;
+    } else {
+      h+=`<div style="font-size:13px;font-weight:700;color:#3b82f6;margin-bottom:10px">📊 Bugungi holat — ${kunNomiLong[now.getDay()]}, ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}</div>`;
+    }
+  } else {
+    h+=`<div style="font-size:13px;font-weight:700;color:#3b82f6;margin-bottom:10px">🗓️ Haftalik holat</div>`;
+  }
+  if(!xonalarSorted.length){
+    h+=`<div style="color:#64748b;font-size:13px;text-align:center;padding:8px">Hali xona qo'shilmagan</div>`;
+  } else if(xonaViewMode==='kun') {
+    // Soatlar oralig'i: 8:00 dan 21:00 gacha
+    const startHour=8,endHour=21;
+    const hours=[];
+    for(let hh=startHour;hh<endHour;hh++)hours.push(hh);
+
+    // Har bir xona uchun shu (tanlangan) kunga oid darslar
+    const xonaJadvalBugun={};
+    xonalarSorted.forEach(x=>{
+      xonaJadvalBugun[x.id]=jadvallar.filter(j=>j.xonaId===x.id&&Array.isArray(j.kunlar)&&j.kunlar.includes(dispDay));
+    });
+
+    // Har bir (xona, soat) uchun band/bo'sh holatini hisoblash. Har soat 2 yarmga (0-30,30-60 daqiqa) bo'linadi
+    function getHalfStatus(xonaId,hour,half){
+      // half=0 -> :00-:30, half=1 -> :30-:60
+      const segStart=hour*60+half*30;
+      const segEnd=segStart+30;
+      const list=xonaJadvalBugun[xonaId]||[];
+      for(const j of list){
+        const[bH,bM]=(j.boshlanish||'00:00').split(':').map(Number);
+        const[tH,tM]=(j.tugash||'00:00').split(':').map(Number);
+        const jb=bH*60+bM,jt=tH*60+tM;
+        if(jb<segEnd&&jt>segStart)return true; // band
+      }
+      return false;
+    }
+
+    let th=`<th class="xroom-h">Xona</th>`;
+    hours.forEach(hh=>th+=`<th><span class="xtime-lbl">${hh}:00</span></th>`);
+    let trows='';
+    xonalarSorted.forEach(x=>{
+      let row=`<tr><td class="xroom-c">${x.nom}</td>`;
+      hours.forEach(hh=>{
+        const h1=getHalfStatus(x.id,hh,0);
+        const h2=getHalfStatus(x.id,hh,1);
+        row+=`<td><div class="xcell">
+          <div class="xcell-half ${h1?'xbusy':'xfree'}"></div>
+          <div class="xcell-half ${h2?'xbusy':'xfree'}"></div>
+        </div></td>`;
+      });
+      row+='</tr>';
+      trows+=row;
+    });
+
+    h+=`<div class="xsheet-wrap"><table class="xsheet"><thead><tr>${th}</tr></thead><tbody>${trows}</tbody></table></div>
+    <div class="xsheet-legend">
+      <span><i style="background:rgba(34,197,94,.5)"></i>Bo'sh</span>
+      <span><i style="background:rgba(239,68,68,.55)"></i>Band</span>
+    </div>`;
+  } else {
+    // HAFTALIK KO'RINISH — har bir xona uchun to'liq yoyilgan kun x soat jadvali
+    xonalarSorted.forEach(x=>{
+      const lessons=jadvallar.filter(j=>j.xonaId===x.id);
+      h+=`<div style="margin-bottom:18px">
+        <div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:8px">🚪 ${x.nom}</div>`;
+      if(!lessons.length){
+        h+=`<div style="color:#64748b;font-size:12px;padding:4px 2px 2px">Hali dars biriktirilmagan</div></div>`;
+        return;
+      }
+      // Vaqt oralig'ini darslar asosida hisoblash (8:00-21:00 standart)
+      let minStart=8*60,maxEnd=21*60;
+      lessons.forEach(j=>{
+        const[bH,bM]=(j.boshlanish||'08:00').split(':').map(Number);
+        const[tH,tM]=(j.tugash||'21:00').split(':').map(Number);
+        minStart=Math.min(minStart,bH*60+bM);
+        maxEnd=Math.max(maxEnd,tH*60+tM);
+      });
+      const startHour=Math.floor(minStart/60),endHour=Math.ceil(maxEnd/60);
+      const hrs=[];for(let hh=startHour;hh<endHour;hh++)hrs.push(hh);
+
+      function getHalf(dayKey,hour,half){
+        const segStart=hour*60+half*30,segEnd=segStart+30;
+        return lessons.find(j=>{
+          if(!Array.isArray(j.kunlar)||!j.kunlar.includes(dayKey))return false;
+          const[bH,bM]=(j.boshlanish||'00:00').split(':').map(Number);
+          const[tH,tM]=(j.tugash||'00:00').split(':').map(Number);
+          const jb=bH*60+bM,jt=tH*60+tM;
+          return jb<segEnd&&jt>segStart;
+        });
+      }
+
+      let thh=`<th class="xroom-h">Kun</th>`;
+      hrs.forEach(hh=>thh+=`<th><span class="xtime-lbl">${hh}:00</span></th>`);
+      let trs='';
+      const adm=isAdmin();
+      haftaTartib.forEach(dk=>{
+        let row=`<tr><td class="xroom-c" style="${dk===bugun?'color:#3b82f6':'color:#7dd3fc'};cursor:pointer" onclick="selectXonaDay('${dk}')" title="${KUN_NOMI[dk]} kunining kunlik holatini ko'rish">${KUN_NOMI[dk]}</td>`;
+        hrs.forEach(hh=>{
+          const l1=getHalf(dk,hh,0);
+          const l2=getHalf(dk,hh,1);
+          const sameLesson=l1&&l2&&l1.id===l2.id;
+          const curStyle=adm?'cursor:pointer;':'';
+          if(sameLesson){
+            row+=`<td><div class="dj-cell-content" style="${curStyle}background:rgba(239,68,68,.45)" onclick="event.stopPropagation();${adm?`openJX('${l1.id}','${x.id}','${dk}',${hh})`:''}">
+              <div>${l1.guruhNom}${l1.subGroup?' ('+l1.subGroup+')':''}</div><div class="djtime">${l1.boshlanish}-${l1.tugash}</div>
+            </div></td>`;
+          } else {
+            row+=`<td><div class="xcell">
+              <div class="xcell-half" style="${curStyle}background:${l1?'rgba(239,68,68,.45)':'rgba(34,197,94,.2)'};display:flex;align-items:center;justify-content:center" onclick="event.stopPropagation();${adm?`openJX(${l1?`'${l1.id}'`:'null'},'${x.id}','${dk}',${hh})`:''}">${l1?`<span style="font-size:7px;color:#fff;font-weight:700">${l1.guruhNom.slice(0,6)}</span>`:''}</div>
+              <div class="xcell-half" style="${curStyle}background:${l2?'rgba(239,68,68,.45)':'rgba(34,197,94,.2)'};display:flex;align-items:center;justify-content:center" onclick="event.stopPropagation();${adm?`openJX(${l2?`'${l2.id}'`:'null'},'${x.id}','${dk}',${hh})`:''}">${l2?`<span style="font-size:7px;color:#fff;font-weight:700">${l2.guruhNom.slice(0,6)}</span>`:''}</div>
+            </div></td>`;
+          }
+        });
+        row+='</tr>';
+        trs+=row;
+      });
+      h+=`<div class="xsheet-wrap"><table class="xsheet"><thead><tr>${thh}</tr></thead><tbody>${trs}</tbody></table></div></div>`;
+    });
+    if(xonalarSorted.length){
+      h+=`<div class="xsheet-legend">
+        <span><i style="background:rgba(34,197,94,.4)"></i>Bo'sh</span>
+        <span><i style="background:rgba(239,68,68,.5)"></i>Band</span>
+        <span style="color:#3b82f6">Bugun (kun nomi ko'k)</span>
+      </div>
+      <div style="font-size:11px;color:#64748b;text-align:center;margin-top:6px">💡 Kun nomini (Dush, Sesh...) bosib, o'sha kunning Kunlik dashboard'ini ko'rishingiz mumkin${isAdmin()?'. Katakchani bosib darsni tahrirlang.':''}</div>`;
+    }
+  }
+  h+=`</div>`;
+
+  if(isAdmin()){
+    h+=`<div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn btn-blue" style="flex:1" onclick="openXonaModal()">🏠 Xona qo'shish</button>
+      <button class="btn btn-green" style="flex:1" onclick="openJadvalModal()">📅 Jadval qo'shish</button>
+    </div>`;
+  }
+
+  if(!xonalarSorted.length){
+    h+=`<div class="empty"><div class="ei">🚪</div>${isAdmin()?"Yuqoridagi tugmadan xona qo'shing":'Xonalar yo\'q'}</div>`;
+  } else {
+    h+=`<div class="xona-grid">`;
+    xonalarSorted.forEach(x=>{
+      const band=isXonaBand(x.id);
+      const xJadval=getXonaJadval(x.id);
+      const op=openXona[x.id];
+      h+=`<div class="xona-card">
+        <div class="xona-header" onclick="togXona('${x.id}')">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="xona-icon" style="background:${x.rang||'#3b82f6'}33">${XONA_TUR_ICON[x.tur]||'🏠'}</div>
+            <div>
+              <div class="xona-name">${x.nom}</div>
+              <div class="xona-meta">${x.izoh||''} · ${xJadval.length} ta dars</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="xona-status ${band?'band':'bosh'}">${band?'🔴 Band':'🟢 Bo\'sh'}</span>
+            <span style="color:#64748b;font-size:12px">${op?'▲':'▼'}</span>
+          </div>
+        </div>
+        <div class="xona-body ${op?'on':''}">`;
+      if(!xJadval.length){
+        h+=`<div style="color:#64748b;font-size:12px;text-align:center;padding:8px">Jadval yo'q</div>`;
+      } else {
+        xJadval.forEach(j=>{
+          h+=`<div class="jadval-row">
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px">${j.guruhNom||'—'}</div>
+              <div class="jadval-vaqt">⏰ ${j.boshlanish||'—'} - ${j.tugash||'—'}</div>
+              <div style="margin-top:4px">${(j.kunlar||[]).map(k=>`<span class="kun-chip">${KUN_NOMI[k]||k}</span>`).join('')}</div>
+            </div>
+            ${isAdmin()?`<button class="btn btn-red" style="font-size:11px;padding:5px 9px;margin-top:2px" onclick="delJadval('${j.id}')">🗑️</button>`:''}
+          </div>`;
+        });
+      }
+      if(isAdmin()){
+        h+=`<div class="btn-row" style="margin-top:8px">
+          <button class="btn btn-purple" style="font-size:12px" onclick="editXona('${x.id}')">✏️ Tahrirlash</button>
+          <button class="btn btn-red" style="font-size:12px" onclick="delXona('${x.id}')">🗑️ O'chirish</button>
+        </div>`;
+      }
+      h+=`</div></div>`;
+    });
+    h+=`</div>`;
+  }
+  pg.innerHTML=h;
+};
+
+window.togXona=id=>{openXona[id]=!openXona[id];renderXona();};
+
+window.openXonaModal=function(){
+  eXonaId=null;
+  document.getElementById('xona-modal-title').textContent='🏠 Yangi xona';
+  ['xn-nom','xn-izoh'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('xona-modal').classList.remove('hide');
+};
+window.editXona=function(id){
+  const x=xonalar.find(a=>a.id===id);if(!x)return;
+  eXonaId=id;
+  document.getElementById('xona-modal-title').textContent='✏️ Xonani tahrirlash';
+  document.getElementById('xn-nom').value=x.nom||'';
+  document.getElementById('xn-tur').value=x.tur||'katta';
+  document.getElementById('xn-rang').value=x.rang||'#3b82f6';
+  document.getElementById('xn-izoh').value=x.izoh||'';
+  document.getElementById('xona-modal').classList.remove('hide');
+};
+window.saveXona=async function(){
+  const nom=document.getElementById('xn-nom').value.trim();
+  if(!nom){toast('❗ Xona nomi shart!');return;}
+  const data={nom,tur:document.getElementById('xn-tur').value,rang:document.getElementById('xn-rang').value,izoh:document.getElementById('xn-izoh').value.trim()};
+  try{
+    if(eXonaId){await updateDoc(doc(db,'xonalar',eXonaId),data);const i=xonalar.findIndex(x=>x.id===eXonaId);if(i>-1)xonalar[i]={...xonalar[i],...data};toast('✅ Yangilandi');}
+    else{const r=await addDoc(collection(db,'xonalar'),data);xonalar.push({id:r.id,...data});toast("✅ Xona qo'shildi!");}
+    closeModal('xona-modal');renderXona();
+  }catch(e){toast('❗ '+e.message);}
+};
+window.delXona=async function(id){
+  if(!confirm("Xonani o'chirishni tasdiqlaysizmi?"))return;
+  try{await deleteDoc(doc(db,'xonalar',id));xonalar=xonalar.filter(x=>x.id!==id);toast("🗑️ O'chirildi");renderXona();}
+  catch(e){toast('❗ '+e.message);}
+};
+window.openJadvalModal=function(){
+  const gs=document.getElementById('jd-guruh');gs.innerHTML='';
+  groups.forEach(g=>gs.innerHTML+=`<option value="${g.id}|${g.name}">${g.name}</option>`);
+  const xs=document.getElementById('jd-xona');xs.innerHTML='';
+  xonalar.forEach(x=>xs.innerHTML+=`<option value="${x.id}|${x.nom}">${x.nom}</option>`);
+  document.querySelectorAll('#jd-kunlar input').forEach(c=>c.checked=false);
+  document.getElementById('jadval-modal').classList.remove('hide');
+};
+window.saveJadval=async function(){
+  const gVal=document.getElementById('jd-guruh').value;
+  const xVal=document.getElementById('jd-xona').value;
+  const kunlar=Array.from(document.querySelectorAll('#jd-kunlar input:checked')).map(c=>c.value);
+  const boshlanish=document.getElementById('jd-bosh').value;
+  const tugash=document.getElementById('jd-tug').value;
+  if(!gVal||!xVal||!kunlar.length||!boshlanish||!tugash){toast("❗ Hamma maydonlarni to'ldiring!");return;}
+  const[guruhId,guruhNom]=gVal.split('|');
+  const[xonaId,xonaNom]=xVal.split('|');
+  const data={guruhId,guruhNom,xonaId,xonaNom,kunlar,boshlanish,tugash};
+  try{
+    const r=await addDoc(collection(db,'jadval'),data);
+    jadvallar.push({id:r.id,...data});
+    toast("✅ Jadval qo'shildi!");
+    closeModal('jadval-modal');renderXona();
+  }catch(e){toast('❗ '+e.message);}
+};
+window.delJadval=async function(id){
+  if(!confirm("Jadvalni o'chirishni tasdiqlaysizmi?"))return;
+  try{await deleteDoc(doc(db,'jadval',id));jadvallar=jadvallar.filter(j=>j.id!==id);toast("🗑️ O'chirildi");renderXona();}
+  catch(e){toast('❗ '+e.message);}
+};
+
+// CHAT
+let chatMsgs=[],chatUnsub=null;
+let vazifalar=[],vazifaFilter='all',eVid=null,vazifaUnsub=null;
+
+function startChatListener(){
+  if(chatUnsub)return;
+  const q=query(collection(db,'chat_messages'),orderBy('createdAt','asc'));
+  chatUnsub=onSnapshot(q,snap=>{
+    chatMsgs=[];snap.forEach(d=>chatMsgs.push({id:d.id,...d.data()}));
+    if(curTab==='chat')renderChat();
+  });
+}
+
+function startVazifaListener(){
+  if(vazifaUnsub)return;
+  vazifaUnsub=onSnapshot(collection(db,'vazifalar'),snap=>{
+    vazifalar=[];snap.forEach(d=>vazifalar.push({id:d.id,...d.data()}));
+    if(curTab==='vazifa')renderVazifalar();
+  });
+}
+
+window.renderChat=function(){
+  const pg=document.getElementById('pg-chat');
+  localStorage.setItem('chat_lastSeen',Date.now().toString());
+  let h=`<div class="chat-wrap"><div class="chat-msgs" id="chat-msgs-list">`;
+  if(!chatMsgs.length)h+=`<div class="empty"><div class="ei">💬</div>Hali xabar yo'q!</div>`;
+  let lastDate='';
+  chatMsgs.forEach(m=>{
+    const isMine=m.uid===CU.id||m.uid===CU.login;
+    const ts=m.createdAt?(m.createdAt.toDate?m.createdAt.toDate():new Date(m.createdAt)):new Date();
+    const dateStr=ts.toLocaleDateString('uz-UZ');
+    const timeStr=ts.toLocaleTimeString('uz-UZ',{hour:'2-digit',minute:'2-digit'});
+    if(dateStr!==lastDate){h+=`<div class="chat-date-sep">📅 ${dateStr}</div>`;lastDate=dateStr;}
+    h+=`<div class="msg ${isMine?'msg-out':'msg-in'}">`;
+    if(!isMine)h+=`<div class="msg-sender">${m.senderName||'Noma\'lum'}</div>`;
+    h+=`<div>${m.text}</div><div class="msg-meta" style="text-align:${isMine?'right':'left'}">${timeStr}</div></div>`;
+  });
+  h+=`</div><div class="chat-inp-row">
+    <input class="chat-inp" id="chat-input" placeholder="Xabar yozing..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}">
+    <button class="chat-send" onclick="sendChatMsg()">➤</button>
+  </div></div>`;
+  pg.innerHTML=h;
+  const list=document.getElementById('chat-msgs-list');
+  if(list)list.scrollTop=list.scrollHeight;
+};
+
+window.sendChatMsg=async function(){
+  const inp=document.getElementById('chat-input');if(!inp)return;
+  const text=inp.value.trim();if(!text)return;
+  inp.value='';
+  try{await addDoc(collection(db,'chat_messages'),{text,uid:CU.id||CU.login,senderName:CU.name,createdAt:serverTimestamp()});}
+  catch(e){toast('❗ '+e.message);}
+};
+
+// VAZIFALAR
+window.renderVazifalar=function(){
+  const pg=document.getElementById('pg-vazifa');
+  let myList=vazifalar;
+  if(!isAdmin())myList=vazifalar.filter(v=>Array.isArray(v.assignedTo)?v.assignedTo.includes(CU.id||CU.login):false);
+  const now=new Date();
+  if(vazifaFilter==='active')myList=myList.filter(v=>!v.done);
+  else if(vazifaFilter==='done')myList=myList.filter(v=>v.done);
+  else if(vazifaFilter==='overdue')myList=myList.filter(v=>!v.done&&v.deadline&&new Date(v.deadline)<now);
+  myList.sort((a,b)=>{
+    const aO=!a.done&&a.deadline&&new Date(a.deadline)<now;
+    const bO=!b.done&&b.deadline&&new Date(b.deadline)<now;
+    if(aO&&!bO)return -1;if(!aO&&bO)return 1;
+    return (a.deadline||'')>(b.deadline||'')?1:-1;
+  });
+  let h='';
+  if(isAdmin())h+=`<button class="btn btn-blue btn-block" style="margin-bottom:12px" onclick="openVM()">➕ Yangi vazifa berish</button>`;
+  h+=`<div class="vazifa-filters">
+    <button class="vf-btn ${vazifaFilter==='all'?'on':''}" onclick="setVF('all')">📋 Hammasi</button>
+    <button class="vf-btn ${vazifaFilter==='active'?'on':''}" onclick="setVF('active')">⏳ Bajarilmagan</button>
+    <button class="vf-btn ${vazifaFilter==='done'?'on':''}" onclick="setVF('done')">✅ Bajarilgan</button>
+    <button class="vf-btn ${vazifaFilter==='overdue'?'on':''}" onclick="setVF('overdue')">🔴 Muddati o'tgan</button>
+  </div>`;
+  if(!myList.length){h+=`<div class="empty"><div class="ei">✅</div>Vazifa topilmadi</div>`;pg.innerHTML=h;return;}
+  myList.forEach(v=>{
+    const dl=v.deadline?new Date(v.deadline):null;
+    const isOverdue=dl&&!v.done&&dl<now;
+    const dlStr=dl?dl.toLocaleString('uz-UZ',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+    let whoNames='';
+    if(Array.isArray(v.assignedTo))whoNames=v.assignedTo.map(uid=>{const x=xodimlar.find(a=>a.id===uid||a.login===uid);return x?x.name:uid;}).join(', ');
+    const myId=CU.id||CU.login;
+    const myDone=Array.isArray(v.doneBy)?v.doneBy.includes(myId):false;
+    const doneCount=Array.isArray(v.doneBy)?v.doneBy.length:0;
+    const totalAssigned=Array.isArray(v.assignedTo)?v.assignedTo.length:1;
+    h+=`<div class="vcard ${v.done?'done':''}">
+      <div class="vtitle">
+        <div class="vcheck ${myDone?'done':''}" onclick="toggleMyDone('${v.id}')">${myDone?'✓':''}</div>
+        <div style="flex:1"><div style="text-decoration:${myDone?'line-through':'none'};color:${isOverdue?'#f87171':'#e2e8f0'}">${v.title}</div>
+        ${v.desc?`<div style="font-size:12px;color:#64748b;margin-top:4px">${v.desc}</div>`:''}
+        </div>
+      </div>
+      <div class="vtags">
+        <span class="vtag vtag-dl ${isOverdue?'':'ok'}">${isOverdue?'🔴':'⏰'} ${dlStr}</span>
+        ${whoNames?`<span class="vtag vtag-who">👤 ${whoNames}</span>`:''}
+        <span class="vtag ${myDone?'vtag-status-done':'vtag-status-open'}">${myDone?'✅ Bajarildi':'⏳ Bajarilmagan'}</span>
+        ${isAdmin()?`<span style="font-size:11px;color:#64748b;padding:2px 6px">${doneCount}/${totalAssigned} bajar.</span>`:''}
+      </div>
+      ${isAdmin()?`<div class="btn-row" style="margin-top:8px">
+        <button class="btn btn-purple" style="font-size:12px" onclick="editV('${v.id}')">✏️</button>
+        <button class="btn btn-red" style="font-size:12px" onclick="delV('${v.id}')">🗑️</button>
+        <button class="btn ${v.done?'btn-gray':'btn-green'}" style="font-size:12px;flex:1" onclick="toggleVDone('${v.id}')">${v.done?'↩️ Qayta ochish':'✅ Yopish'}</button>
+      </div>`:''}
+    </div>`;
+  });
+  pg.innerHTML=h;
+};
+
+window.setVF=function(f){vazifaFilter=f;renderVazifalar();};
+
+window.toggleMyDone=async function(vid){
+  const myId=CU.id||CU.login;
+  const v=vazifalar.find(x=>x.id===vid);if(!v)return;
+  let doneBy=Array.isArray(v.doneBy)?[...v.doneBy]:[];
+  if(doneBy.includes(myId))doneBy=doneBy.filter(x=>x!==myId);else doneBy.push(myId);
+  const allDone=Array.isArray(v.assignedTo)?v.assignedTo.every(uid=>doneBy.includes(uid)):false;
+  try{await updateDoc(doc(db,'vazifalar',vid),{doneBy,done:allDone});toast(doneBy.includes(myId)?'✅ Bajarildi':'↩️ Bekor qilindi');}
+  catch(e){toast('❗ '+e.message);}
+};
+
+window.toggleVDone=async function(vid){
+  const v=vazifalar.find(x=>x.id===vid);if(!v)return;
+  try{await updateDoc(doc(db,'vazifalar',vid),{done:!v.done});toast(v.done?'↩️ Qayta ochildi':'✅ Yopildi');}
+  catch(e){toast('❗ '+e.message);}
+};
+
+window.openVM=async function(){
+  eVid=null;document.getElementById('vm-title').textContent='➕ Yangi vazifa';
+  ['v-title','v-desc'].forEach(id=>document.getElementById(id).value='');
+  const tmr=new Date();tmr.setDate(tmr.getDate()+1);tmr.setSeconds(0);
+  document.getElementById('v-deadline').value=tmr.toISOString().slice(0,16);
+  if(!xodimlar.length){
+    try{const xs=await getDocs(collection(db,'xodimlar'));xodimlar=[];xs.forEach(d=>xodimlar.push({id:d.id,...d.data()}));}catch(e){}
+  }
+  const sel=document.getElementById('v-who');sel.innerHTML='';
+  if(!xodimlar.length){
+    sel.innerHTML=`<option value="" disabled>Avval "Xodimlar" bo'limidan xodim qo'shing</option>`;
+  } else {
+    xodimlar.forEach(x=>sel.innerHTML+=`<option value="${x.id||x.login}">${x.name} (${x.role==='admin'?'Admin':'Ustoz'})</option>`);
+  }
+  document.getElementById('vm').classList.remove('hide');
+};
+window.editV=async function(vid){
+  const v=vazifalar.find(x=>x.id===vid);if(!v)return;
+  eVid=vid;document.getElementById('vm-title').textContent='✏️ Vazifani tahrirlash';
+  document.getElementById('v-title').value=v.title||'';
+  document.getElementById('v-desc').value=v.desc||'';
+  document.getElementById('v-deadline').value=v.deadline?v.deadline.slice(0,16):'';
+  if(!xodimlar.length){
+    try{const xs=await getDocs(collection(db,'xodimlar'));xodimlar=[];xs.forEach(d=>xodimlar.push({id:d.id,...d.data()}));}catch(e){}
+  }
+  const sel=document.getElementById('v-who');sel.innerHTML='';
+  if(!xodimlar.length){
+    sel.innerHTML=`<option value="" disabled>Avval "Xodimlar" bo'limidan xodim qo'shing</option>`;
+  } else {
+    xodimlar.forEach(x=>{const uid=x.id||x.login;sel.innerHTML+=`<option value="${uid}"${Array.isArray(v.assignedTo)&&v.assignedTo.includes(uid)?' selected':''}>${x.name}</option>`;});
+  }
+  document.getElementById('vm').classList.remove('hide');
+};
+let _savingV=false;
+window.saveVazifa=async function(){
+  if(_savingV)return;
+  const title=document.getElementById('v-title').value.trim();if(!title){toast('❗ Vazifa nomini kiriting!');return;}
+  const deadline=document.getElementById('v-deadline').value;if(!deadline){toast('❗ Deadline kiriting!');return;}
+  const assignedTo=Array.from(document.getElementById('v-who').selectedOptions).map(o=>o.value);
+  if(!assignedTo.length){toast('❗ Kimgadir berish kerak!');return;}
+  const data={title,desc:document.getElementById('v-desc').value.trim(),assignedTo,deadline,done:false,doneBy:[],createdBy:CU.name,createdAt:new Date().toISOString()};
+  _savingV=true;
+  try{
+    if(eVid){await updateDoc(doc(db,'vazifalar',eVid),{title:data.title,desc:data.desc,assignedTo,deadline});toast('✅ Yangilandi');}
+    else{await addDoc(collection(db,'vazifalar'),data);toast('✅ Vazifa berildi!');}
+    await addDoc(collection(db,'chat_messages'),{text:`📌 Yangi vazifa: "${title}" — Deadline: ${new Date(deadline).toLocaleString('uz-UZ')}`,uid:'system',senderName:'🤖 Tizim',createdAt:serverTimestamp()});
+    closeModal('vm');
+  }catch(e){toast('❗ '+e.message);}
+  finally{_savingV=false;}
+};
+window.delV=async function(vid){
+  if(!confirm("Vazifani o'chirishni tasdiqlaysizmi?"))return;
+  try{await deleteDoc(doc(db,'vazifalar',vid));toast("🗑️ O'chirildi");}
+  catch(e){toast('❗ '+e.message);}
+};
+
+// TELEGRAM
+const TG_TOKEN="8982884434:AAGYRjbM4OZxFBJMP-Kw10i0Il6Q-9DdIwI";
+const TG_BOT="FutureAcademy_uz_bot";
+const TG_API=`https://api.telegram.org/bot${TG_TOKEN}`;
+
+async function tgSend(chatId,text){
+  try{const r=await fetch(`${TG_API}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:chatId,text,parse_mode:'HTML'})});const d=await r.json();return d.ok;}catch{return false;}
+}
+
+window.renderTelegram=async function(){
+  const pg=document.getElementById('pg-tg');
+  const linked=students.filter(s=>s.tgChatId&&s.status==='active');
+  const unlinked=students.filter(s=>!s.tgChatId&&s.status==='active');
+  const unpaid=students.filter(s=>s.tgChatId&&s.status==='active'&&!isPaidFull(s.id));
+  let h='';
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+    <div class="sbox"><div class="snum" style="color:#4ade80">${linked.length}</div><div class="slbl">Ulangan</div></div>
+    <div class="sbox"><div class="snum" style="color:#f87171">${unlinked.length}</div><div class="slbl">Ulanmagan</div></div>
+    <div class="sbox"><div class="snum" style="color:#fbbf24">${unpaid.length}</div><div class="slbl">To'lamagan</div></div>
+  </div>`;
+  h+=`<div class="tg-panel">
+    <div class="tg-panel-title">🔔 To'lov eslatmasi</div>
+    <select class="tg-input" id="tg-grp-pay"><option value="">— Barcha o'quvchilar —</option>${groups.map(g=>`<option value="${g.name}">${g.name}</option>`).join('')}</select>
+    <button class="btn btn-green btn-block" onclick="sendPaymentReminder(document.getElementById('tg-grp-pay').value||null)">📤 Yuborish (${unpaid.length} ta)</button>
+  </div>`;
+  h+=`<div class="tg-panel">
+    <div class="tg-panel-title">⚠️ Dars bekor xabari</div>
+    <select class="tg-input" id="tg-grp-cancel"><option value="">— Barcha o'quvchilar —</option>${groups.map(g=>`<option value="${g.name}">${g.name}</option>`).join('')}</select>
+    <textarea class="tg-input" id="tg-cancel-text" rows="2" placeholder="Sabab: Ustoz kasal..."></textarea>
+    <button class="btn btn-red btn-block" onclick="sendLessonCancelled(document.getElementById('tg-grp-cancel').value||null,document.getElementById('tg-cancel-text').value)">⚠️ Yuborish</button>
+  </div>`;
+  h+=`<div class="tg-panel">
+    <div class="tg-panel-title">📢 E'lon yuborish</div>
+    <select class="tg-input" id="tg-grp-ann"><option value="">— Barcha o'quvchilar —</option>${groups.map(g=>`<option value="${g.name}">${g.name}</option>`).join('')}</select>
+    <textarea class="tg-input" id="tg-ann-text" rows="3" placeholder="E'lon matni..."></textarea>
+    <button class="btn btn-blue btn-block" onclick="sendAnnouncement(document.getElementById('tg-ann-text').value,document.getElementById('tg-grp-ann').value||null)">📢 Yuborish</button>
+  </div>`;
+  if(unlinked.length){
+    h+=`<div class="tg-panel"><div class="tg-panel-title">🔗 Ulanmagan o'quvchilar (${unlinked.length} ta)</div>`;
+    unlinked.slice(0,20).forEach(s=>{
+      h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1e2d40">
+        <div><div style="font-size:13px;font-weight:600">${s.name}</div><div style="font-size:11px;color:#64748b">${s.group||'—'} · ${s.phone||'—'}</div></div>
+        <button class="btn btn-purple" style="font-size:12px" onclick="copyTgLink('${s.id}','${s.name}')">🔗 Link</button>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+  pg.innerHTML=h;
+};
+
+window.copyTgLink=function(sid,sname){
+  const link=`https://t.me/${TG_BOT}?start=${sid}`;
+  navigator.clipboard.writeText(link).then(()=>toast(`📋 Link nusxalandi: ${sname}`)).catch(()=>{const el=document.createElement('textarea');el.value=link;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);toast('📋 Nusxalandi!');});
+};
+window.sendPaymentReminder=async function(grpName){
+  const list=(grpName?students.filter(s=>s.group===grpName):students).filter(s=>s.status==='active'&&s.tgChatId&&!isPaidFull(s.id));
+  if(!list.length){toast('ℹ️ Hamma to\'lagan yoki hech kim ulanmagan');return;}
+  let ok=0;
+  for(const s of list){const fee=s.fee?s.fee.toLocaleString()+' so\'m':'belgilanmagan';if(await tgSend(s.tgChatId,`🔔 <b>To'lov eslatmasi</b>\n\nSalom, <b>${s.name}</b>!\n\n📅 <b>${mlbl()}</b> uchun to'lov:\n💰 Summa: <b>${fee}</b>\n\n🎓 <i>Future Academy</i>`))ok++;}
+  toast(`✅ ${ok}/${list.length} ta yuborildi`);
+};
+window.sendLessonCancelled=async function(grpName,xabar){
+  const list=(grpName?students.filter(s=>s.group===grpName):students).filter(s=>s.status==='active'&&s.tgChatId);
+  if(!list.length){toast('⚠️ Ulangan o\'quvchi yo\'q');return;}
+  let ok=0;
+  for(const s of list){if(await tgSend(s.tgChatId,`⚠️ <b>Dars bekor qilindi</b>\n\nSalom, <b>${s.name}</b>!\n\n${xabar||'Bugungi dars bekor qilindi.'}\n\n🎓 <i>Future Academy</i>`))ok++;}
+  toast(`✅ ${ok} ta yuborildi`);
+};
+window.sendAnnouncement=async function(text,grpName){
+  if(!text.trim()){toast('❗ Matn kiriting');return;}
+  const list=(grpName?students.filter(s=>s.group===grpName):students).filter(s=>s.status==='active'&&s.tgChatId);
+  if(!list.length){toast('⚠️ Ulangan o\'quvchi yo\'q');return;}
+  let ok=0;
+  for(const s of list){if(await tgSend(s.tgChatId,`📢 <b>E'lon</b>\n\n${text}\n\n🎓 <i>Future Academy</i>`))ok++;}
+  toast(`✅ ${ok} ta yuborildi`);
+};
+
+// LIDLAR
+let lidlar=[],lidFilter='all',elidId=null,_savingL=false;
+const HOLAT_LABELS={yangi:'🟡 Yangi',qongiroq:'📞 Qo\'ng\'iroq kutilmoqda',qiziqdi:'🟣 Qiziqdi',aylandi:'🟢 O\'quvchiga aylandi',rad:'🔴 Rad etdi'};
+
+function startLidListener(){
+  if(window._lidUnsub)return;
+  window._lidUnsub=onSnapshot(collection(db,'lidlar'),snap=>{
+    lidlar=[];snap.forEach(d=>lidlar.push({id:d.id,...d.data()}));
+    if(curTab==='lid')renderLidlar();
+  });
+}
+
+window.renderLidlar=function(){
+  const pg=document.getElementById('pg-lid');
+  let list=[...lidlar];
+  if(lidFilter!=='all')list=list.filter(l=>l.holat===lidFilter);
+  const order={yangi:0,qongiroq:1,qiziqdi:2,aylandi:3,rad:4};
+  list.sort((a,b)=>(order[a.holat]||0)-(order[b.holat]||0));
+  const stats={jami:lidlar.length,yangi:lidlar.filter(l=>l.holat==='yangi').length,qiziqdi:lidlar.filter(l=>l.holat==='qiziqdi').length,aylandi:lidlar.filter(l=>l.holat==='aylandi').length,rad:lidlar.filter(l=>l.holat==='rad').length,callNo:lidlar.filter(l=>l.call!=='yes').length};
+  let h=`<button class="btn btn-blue btn-block" style="margin-bottom:12px" onclick="openLM()">🎯 Yangi lid qo'shish</button>`;
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+    <div class="sbox"><div class="snum" style="color:#e2e8f0">${stats.jami}</div><div class="slbl">Jami</div></div>
+    <div class="sbox"><div class="snum" style="color:#4ade80">${stats.aylandi}</div><div class="slbl">O'quvchi bo'ldi</div></div>
+    <div class="sbox"><div class="snum" style="color:#fbbf24">${stats.callNo}</div><div class="slbl">Qo'ng'iroq yo'q</div></div>
+  </div>`;
+  h+=`<div class="lid-filters">
+    <button class="lf-btn ${lidFilter==='all'?'on':''}" onclick="setLF('all')">📋 Hammasi</button>
+    <button class="lf-btn ${lidFilter==='yangi'?'on':''}" onclick="setLF('yangi')">🟡 Yangi</button>
+    <button class="lf-btn ${lidFilter==='qongiroq'?'on':''}" onclick="setLF('qongiroq')">📞 Qo'ng'iroq</button>
+    <button class="lf-btn ${lidFilter==='qiziqdi'?'on':''}" onclick="setLF('qiziqdi')">🟣 Qiziqdi</button>
+    <button class="lf-btn ${lidFilter==='aylandi'?'on':''}" onclick="setLF('aylandi')">🟢 O'quvchi</button>
+    <button class="lf-btn ${lidFilter==='rad'?'on':''}" onclick="setLF('rad')">🔴 Rad</button>
+  </div>`;
+  if(!list.length){h+=`<div class="empty"><div class="ei">🎯</div>Lid topilmadi</div>`;pg.innerHTML=h;return;}
+  list.forEach(l=>{
+    const holatKey=l.holat||'yangi';
+    const date=l.createdAt?new Date(l.createdAt).toLocaleDateString('uz-UZ'):'—';
+    h+=`<div class="lcard holat-${holatKey}">
+      <div class="lcard-name">${l.name||'—'}</div>
+      <div class="lcard-meta">📞 ${l.phone||'—'} · 📅 ${date}</div>
+      <div class="lcard-tags">
+        ${l.kurs?`<span class="ltag ltag-kurs">📚 ${l.kurs}</span>`:''}
+        <span class="ltag ltag-${holatKey}">${HOLAT_LABELS[holatKey]||holatKey}</span>
+        <span class="ltag ${l.call==='yes'?'lcall-yes':'lcall-no'}">${l.call==='yes'?'✅ Qo\'ng\'iroq qilindi':'⚠️ Qo\'ng\'iroq yo\'q'}</span>
+      </div>
+      ${l.izoh?`<div style="font-size:12px;color:#64748b;margin-bottom:8px">💬 ${l.izoh}</div>`:''}
+      <div class="btn-row">
+        <button class="btn btn-purple" style="font-size:12px" onclick="editLid('${l.id}')">✏️</button>
+        <button class="btn btn-red" style="font-size:12px" onclick="delLid('${l.id}')">🗑️</button>
+        ${l.call!=='yes'?`<button class="btn btn-green" style="font-size:12px;flex:1" onclick="markCalled('${l.id}')">📞 Qo'ng'iroq qilindi</button>`:''}
+        ${holatKey==='qiziqdi'?`<button class="btn btn-blue" style="font-size:12px;flex:1" onclick="qoshYangiGuruhga('${l.id}')">🆕 Yangi guruhga</button>`:''}
+        ${holatKey==='qiziqdi'?`<button class="btn btn-purple" style="font-size:12px;flex:1" onclick="convertToStudent('${l.id}')">🎓 Guruhga o'tkazish</button>`:''}
+      </div>
+    </div>`;
+  });
+  pg.innerHTML=h;
+};
+
+window.setLF=function(f){lidFilter=f;renderLidlar();};
+window.openLM=function(){
+  elidId=null;document.getElementById('lm-title').textContent='🎯 Yangi lid';
+  ['l-name','l-phone','l-kurs','l-izoh'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('l-holat').value='yangi';document.getElementById('l-call').value='no';
+  document.getElementById('lm').classList.remove('hide');
+};
+window.editLid=function(lid){
+  const l=lidlar.find(x=>x.id===lid);if(!l)return;
+  elidId=lid;document.getElementById('lm-title').textContent='✏️ Lidni tahrirlash';
+  document.getElementById('l-name').value=l.name||'';document.getElementById('l-phone').value=l.phone||'';
+  document.getElementById('l-kurs').value=l.kurs||'';document.getElementById('l-izoh').value=l.izoh||'';
+  document.getElementById('l-holat').value=l.holat||'yangi';document.getElementById('l-call').value=l.call||'no';
+  document.getElementById('lm').classList.remove('hide');
+};
+window.saveLid=async function(){
+  if(_savingL)return;
+  const name=document.getElementById('l-name').value.trim();const phone=document.getElementById('l-phone').value.trim();
+  if(!name){toast('❗ Ism kiriting!');return;}if(!phone){toast('❗ Telefon kiriting!');return;}
+  const data={name,phone,kurs:document.getElementById('l-kurs').value.trim(),holat:document.getElementById('l-holat').value,call:document.getElementById('l-call').value,izoh:document.getElementById('l-izoh').value.trim(),createdAt:elidId?(lidlar.find(x=>x.id===elidId)||{}).createdAt||new Date().toISOString():new Date().toISOString(),updatedAt:new Date().toISOString()};
+  _savingL=true;
+  try{
+    if(elidId){await updateDoc(doc(db,'lidlar',elidId),data);toast('✅ Yangilandi');}
+    else{await addDoc(collection(db,'lidlar'),data);toast("✅ Lid qo'shildi!");}
+    closeModal('lm');
+  }catch(e){toast('❗ '+e.message);}
+  finally{_savingL=false;}
+};
+window.delLid=async function(lid){
+  if(!confirm("Lidni o'chirishni tasdiqlaysizmi?"))return;
+  try{await deleteDoc(doc(db,'lidlar',lid));toast("🗑️ O'chirildi");}
+  catch(e){toast('❗ '+e.message);}
+};
+window.markCalled=async function(lid){
+  try{await updateDoc(doc(db,'lidlar',lid),{call:'yes',holat:'qongiroq',updatedAt:new Date().toISOString()});toast("📞 Qo'ng'iroq qilindi deb belgilandi!");}
+  catch(e){toast('❗ '+e.message);}
+};
+window.convertToStudent=async function(lid){
+  const l=lidlar.find(x=>x.id===lid);if(!l)return;
+  if(!confirm(`${l.name} ni o'quvchiga o'tkazasizmi?`))return;
+  try{await updateDoc(doc(db,'lidlar',lid),{holat:'aylandi',updatedAt:new Date().toISOString()});toast("🎓 O'quvchiga aylandi!");}
+  catch(e){toast('❗ '+e.message);}
+};
+
+// ════════════════════════════════════════
+// ── YUZ TANISH BO'LIMI ──
+// ════════════════════════════════════════
+window.renderYuzTanish=function(){
+  const pg=document.getElementById('pg-yuz');
+  const now=new Date();
+  const day=now.getDate();
+
+  const kelganlar=students.filter(s=>s.status==='active'&&(att[s.id]||{})[day]==='k');
+  const kelmadi=students.filter(s=>s.status==='active'&&(att[s.id]||{})[day]==='km');
+  const belgilanmagan=students.filter(s=>s.status==='active'&&!(att[s.id]||{})[day]);
+  const yuzYoq=students.filter(s=>s.status==='active'&&!s.faceImage);
+
+  let h='';
+
+  // Stats
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:14px">
+    <div class="sbox"><div class="snum" style="color:#4ade80;font-size:18px">${kelganlar.length}</div><div class="slbl">✅ Keldi</div></div>
+    <div class="sbox"><div class="snum" style="color:#f87171;font-size:18px">${kelmadi.length}</div><div class="slbl">❌ Kelmadi</div></div>
+    <div class="sbox"><div class="snum" style="color:#fbbf24;font-size:18px">${belgilanmagan.length}</div><div class="slbl">⏳ Kutilmoqda</div></div>
+    <div class="sbox"><div class="snum" style="color:#94a3b8;font-size:18px">${yuzYoq.length}</div><div class="slbl">📷 Yuzsiz</div></div>
+  </div>`;
+
+  // Guruh bo'yicha ko'rsatish
+  const myGroups=isAdmin()?groups:groups.filter(g=>{
+    const ug=Array.isArray(CU.groups)?CU.groups:(CU.group?[CU.group]:[]);
+    return ug.includes(g.name);
+  });
+
+  myGroups.forEach(g=>{
+    const gStudents=students.filter(s=>s.status==='active'&&s.group===g.name);
+    if(!gStudents.length)return;
+
+    const gKeldi=gStudents.filter(s=>(att[s.id]||{})[day]==='k').length;
+    const gKelmadi=gStudents.filter(s=>(att[s.id]||{})[day]==='km').length;
+    const gKutilmoqda=gStudents.filter(s=>!(att[s.id]||{})[day]).length;
+
+    h+=`<div class="rcard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="rtitle" style="margin-bottom:0;color:${g.color}">${g.name}</div>
+        <div style="display:flex;gap:6px;font-size:12px">
+          <span style="color:#4ade80">✅${gKeldi}</span>
+          <span style="color:#f87171">❌${gKelmadi}</span>
+          <span style="color:#fbbf24">⏳${gKutilmoqda}</span>
+        </div>
+      </div>`;
+
+    gStudents.forEach(s=>{
+      const v=(att[s.id]||{})[day];
+      const statusIcon=v==='k'?'✅':v==='km'?'❌':'⏳';
+      const statusColor=v==='k'?'#4ade80':v==='km'?'#f87171':'#fbbf24';
+      const ini=s.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+
+      h+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1e2d40">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="ava" style="background:${g.color};width:30px;height:30px;font-size:11px">${ini}</div>
+          <div>
+            <div style="font-size:13px;font-weight:600">${s.name}</div>
+            <div style="font-size:11px;color:#64748b">${s.faceImage?'📷 Yuz bor':'📷 Yuz yo\'q'}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="color:${statusColor};font-size:16px">${statusIcon}</span>
+          ${isAdmin()&&!s.faceImage?`<button class="btn btn-blue" style="font-size:11px;padding:4px 8px" onclick="openFaceModal('${s.id}','${s.name.replace(/'/g,'')}')">📷</button>`:''}
+        </div>
+      </div>`;
+    });
+
+    h+=`</div>`;
+  });
+
+  // Yuzi yo'qlar alohida
+  if(yuzYoq.length&&isAdmin()){
+    h+=`<div class="rcard">
+      <div class="rtitle">⚠️ Yuzi qo'shilmagan — avtomatik davomat ishlamaydi</div>`;
+    yuzYoq.forEach(s=>{
+      h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #1e2d40">
+        <div>
+          <div style="font-size:13px;font-weight:600">${s.name}</div>
+          <div style="font-size:11px;color:#64748b">${s.group||'—'}</div>
+        </div>
+        <button class="btn btn-blue" style="font-size:12px" onclick="openFaceModal('${s.id}','${s.name.replace(/'/g,'')}')">📷 Qo'shish</button>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+
+  pg.innerHTML=h;
+};
+
+// ════════════════════════════════════════
+// ── YANGI GURUHLAR BO'LIMI ──
+// ════════════════════════════════════════
+let yangiGuruhlar=[], eYGid=null;
+
+async function loadYangiGuruhlar(){
+  try{
+    const snap=await getDocs(collection(db,'yangi_guruhlar'));
+    yangiGuruhlar=[];snap.forEach(d=>yangiGuruhlar.push({id:d.id,...d.data()}));
+  }catch(e){yangiGuruhlar=[];}
+}
+
+window.renderYangiGuruhlar=async function(){
+  if(!yangiGuruhlar.length)await loadYangiGuruhlar();
+  const pg=document.getElementById('pg-yangi-guruh');
+  let h='';
+
+  if(isAdmin()){
+    h+=`<button class="btn btn-blue btn-block" style="margin-bottom:14px" onclick="openYGModal()">🆕 Yangi guruh ochish</button>`;
+  }
+
+  if(!yangiGuruhlar.length){
+    h+=`<div class="empty"><div class="ei">🆕</div>Hali yangi guruh yo'q</div>`;
+    pg.innerHTML=h;return;
+  }
+
+  yangiGuruhlar.forEach(yg=>{
+    const kutuvchilar=yg.kutuvchilar||[];
+    h+=`<div class="rcard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <div style="font-size:15px;font-weight:800">${yg.nom}</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px">📅 ${yg.boshlanish||'Vaqt belgilanmagan'} · Sig'im: ${yg.sigim||'?'} kishi</div>
+        </div>
+        <span style="background:rgba(59,130,246,.2);color:#60a5fa;border:1px solid rgba(59,130,246,.3);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">${kutuvchilar.length}/${yg.sigim||'?'}</span>
+      </div>`;
+    
+    if(kutuvchilar.length){
+      h+=`<div style="margin-bottom:10px">`;
+      kutuvchilar.forEach((k,i)=>{
+        h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #1e2d40">
+          <div>
+            <div style="font-size:13px;font-weight:600">${k.name}</div>
+            <div style="font-size:11px;color:#64748b">${k.phone||'—'}</div>
+          </div>
+          ${isAdmin()?`<div style="display:flex;gap:6px">
+            <button class="btn btn-green" style="font-size:11px;padding:4px 8px" onclick="otkazishGuruhga('${yg.id}',${i})">✅ Guruhga o'tkazish</button>
+            <button class="btn btn-red" style="font-size:11px;padding:4px 8px" onclick="ochirishKutuvchi('${yg.id}',${i})">🗑️</button>
+          </div>`:''}
+        </div>`;
+      });
+      h+=`</div>`;
+    } else {
+      h+=`<div style="color:#64748b;font-size:12px;text-align:center;padding:8px">Hali hech kim ro'yxatda yo'q</div>`;
+    }
+
+    if(isAdmin()){
+      h+=`<div class="btn-row">
+        <button class="btn btn-purple" style="font-size:12px" onclick="editYG('${yg.id}')">✏️ Tahrirlash</button>
+        <button class="btn btn-red" style="font-size:12px" onclick="delYG('${yg.id}')">🗑️</button>
+        ${kutuvchilar.length?`<button class="btn btn-blue" style="font-size:12px;flex:1" onclick="guruhniOchish('${yg.id}')">🚀 Guruhni ochish</button>`:''}
+      </div>`;
+    }
+    h+=`</div>`;
+  });
+
+  pg.innerHTML=h;
+};
+
+window.openYGModal=function(){
+  eYGid=null;
+  document.getElementById('yg-modal-title').textContent='🆕 Yangi guruh ochish';
+  ['yg-nom','yg-boshlanish','yg-izoh'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('yg-sigim').value='10';
+  document.getElementById('yg-modal').classList.remove('hide');
+};
+
+window.editYG=function(id){
+  const yg=yangiGuruhlar.find(x=>x.id===id);if(!yg)return;
+  eYGid=id;
+  document.getElementById('yg-modal-title').textContent='✏️ Guruhni tahrirlash';
+  document.getElementById('yg-nom').value=yg.nom||'';
+  document.getElementById('yg-boshlanish').value=yg.boshlanish||'';
+  document.getElementById('yg-sigim').value=yg.sigim||10;
+  document.getElementById('yg-izoh').value=yg.izoh||'';
+  document.getElementById('yg-modal').classList.remove('hide');
+};
+
+window.saveYG=async function(){
+  const nom=document.getElementById('yg-nom').value.trim();
+  if(!nom){toast('❗ Nom shart!');return;}
+  const data={nom,boshlanish:document.getElementById('yg-boshlanish').value,sigim:parseInt(document.getElementById('yg-sigim').value)||10,izoh:document.getElementById('yg-izoh').value.trim()};
+  try{
+    if(eYGid){
+      await updateDoc(doc(db,'yangi_guruhlar',eYGid),data);
+      const i=yangiGuruhlar.findIndex(x=>x.id===eYGid);
+      if(i>-1)yangiGuruhlar[i]={...yangiGuruhlar[i],...data};
+      toast('✅ Yangilandi');
+    } else {
+      const r=await addDoc(collection(db,'yangi_guruhlar'),{...data,kutuvchilar:[],createdAt:new Date().toISOString()});
+      yangiGuruhlar.push({id:r.id,...data,kutuvchilar:[]});
+      toast("✅ Yangi guruh ochildi!");
+    }
+    closeModal('yg-modal');renderYangiGuruhlar();
+  }catch(e){toast('❗ '+e.message);}
+};
+
+window.delYG=async function(id){
+  if(!confirm("Guruhni o'chirishni tasdiqlaysizmi?"))return;
+  try{
+    await deleteDoc(doc(db,'yangi_guruhlar',id));
+    yangiGuruhlar=yangiGuruhlar.filter(x=>x.id!==id);
+    toast("🗑️ O'chirildi");renderYangiGuruhlar();
+  }catch(e){toast('❗ '+e.message);}
+};
+
+window.ochirishKutuvchi=async function(ygId,idx){
+  const yg=yangiGuruhlar.find(x=>x.id===ygId);if(!yg)return;
+  const kutuvchilar=[...(yg.kutuvchilar||[])];
+  kutuvchilar.splice(idx,1);
+  try{
+    await updateDoc(doc(db,'yangi_guruhlar',ygId),{kutuvchilar});
+    yg.kutuvchilar=kutuvchilar;
+    toast("🗑️ O'chirildi");renderYangiGuruhlar();
+  }catch(e){toast('❗ '+e.message);}
+};
+
+window.otkazishGuruhga=async function(ygId,idx){
+  const yg=yangiGuruhlar.find(x=>x.id===ygId);if(!yg)return;
+  const kutuvchi=(yg.kutuvchilar||[])[idx];if(!kutuvchi)return;
+  
+  // Guruh tanlash
+  const guruhNom=prompt('Qaysi guruhga o\'tkazish?\n'+groups.map(g=>g.name).join('\n'));
+  if(!guruhNom||!groups.find(g=>g.name===guruhNom)){toast('❗ Guruh topilmadi');return;}
+  
+  try{
+    // Students ga qo'shish
+    const sData={name:kutuvchi.name,phone:kutuvchi.phone||'',group:guruhNom,status:'active',age:kutuvchi.age||0,teacher:'',fee:kutuvchi.fee||0};
+    const r=await addDoc(collection(db,'students'),sData);
+    students.push({id:r.id,...sData});
+    
+    // Lid dan yangilash
+    if(kutuvchi.lidId){
+      await updateDoc(doc(db,'lidlar',kutuvchi.lidId),{holat:'aylandi',updatedAt:new Date().toISOString()});
+    }
+    
+    // Kutuvchilar dan o'chirish
+    const kutuvchilar=[...(yg.kutuvchilar||[])];
+    kutuvchilar.splice(idx,1);
+    await updateDoc(doc(db,'yangi_guruhlar',ygId),{kutuvchilar});
+    yg.kutuvchilar=kutuvchilar;
+    
+    toast(`✅ ${kutuvchi.name} → ${guruhNom} guruhiga o'tkazildi!`);
+    renderYangiGuruhlar();
+  }catch(e){toast('❗ '+e.message);}
+};
+
+window.guruhniOchish=async function(ygId){
+  const yg=yangiGuruhlar.find(x=>x.id===ygId);if(!yg)return;
+  if(!confirm(`"${yg.nom}" guruhini ochib, barcha kutuvchilarni o'quvchiga o'tkazasizmi?`))return;
+  
+  const guruhNom=prompt('Yangi guruh nomi (Guruhlar bo\'limida ko\'rinadi):',yg.nom);
+  if(!guruhNom)return;
+  
+  try{
+    // Yangi guruh yaratish
+    const gData={name:guruhNom,time:'',color:'#3b82f6',teacher:''};
+    const gr=await addDoc(collection(db,'groups'),gData);
+    groups.push({id:gr.id,...gData});
+    
+    // Barcha kutuvchilarni o'quvchiga o'tkazish
+    for(const k of yg.kutuvchilar||[]){
+      const sData={name:k.name,phone:k.phone||'',group:guruhNom,status:'active',age:k.age||0,teacher:'',fee:k.fee||0};
+      const r=await addDoc(collection(db,'students'),sData);
+      students.push({id:r.id,...sData});
+      if(k.lidId){
+        await updateDoc(doc(db,'lidlar',k.lidId),{holat:'aylandi'});
+      }
+    }
+    
+    // Yangi guruhni yopish
+    await updateDoc(doc(db,'yangi_guruhlar',ygId),{status:'ochildi',ochilganGuruh:guruhNom});
+    toast(`🚀 "${guruhNom}" guruh ochildi! ${(yg.kutuvchilar||[]).length} ta o'quvchi qo'shildi!`);
+    renderYangiGuruhlar();
+  }catch(e){toast('❗ '+e.message);}
+};
+
+// Lid dan yangi guruhga qo'shish
+window.qoshYangiGuruhga=async function(lidId){
+  if(!yangiGuruhlar.length)await loadYangiGuruhlar();
+  if(!yangiGuruhlar.length){toast('⚠️ Hali yangi guruh yo\'q. Avval guruh oching!');return;}
+  
+  const lid=lidlar.find(x=>x.id===lidId);if(!lid)return;
+  
+  const guruhNom=yangiGuruhlar.map((yg,i)=>`${i+1}. ${yg.nom} (${(yg.kutuvchilar||[]).length}/${yg.sigim})`).join('\n');
+  const idx=parseInt(prompt('Qaysi guruhga qo\'shish?\n'+guruhNom))-1;
+  
+  if(isNaN(idx)||idx<0||idx>=yangiGuruhlar.length){toast('❗ Noto\'g\'ri raqam');return;}
+  
+  const yg=yangiGuruhlar[idx];
+  const kutuvchilar=[...(yg.kutuvchilar||[])];
+  
+  if(kutuvchilar.find(k=>k.lidId===lidId)){toast('⚠️ Bu o\'quvchi allaqachon ro\'yxatda!');return;}
+  
+  kutuvchilar.push({name:lid.name,phone:lid.phone,lidId,fee:0});
+  
+  try{
+    await updateDoc(doc(db,'yangi_guruhlar',yg.id),{kutuvchilar});
+    yg.kutuvchilar=kutuvchilar;
+    await updateDoc(doc(db,'lidlar',lidId),{holat:'aylandi',updatedAt:new Date().toISOString()});
+    toast(`✅ ${lid.name} → "${yg.nom}" kutish ro'yxatiga qo'shildi!`);
+    renderLidlar();
+  }catch(e){toast('❗ '+e.message);}
+};
+
+// ════════════════════════════════════════
+// ── XODIM DAVOMATI ──
+// ════════════════════════════════════════
+window.renderXodimDavomat=async function(){
+  const pg=document.getElementById('pg-xodim-davomat');
+  let h=mbar();
+
+  const m=mk();
+  let xAttAll={};
+  try{const snap=await getDocs(collection(db,'xodim_att_'+m));snap.forEach(d=>xAttAll[d.id]=d.data());}catch{}
+
+  const now=new Date();
+  const today=now.getDate();
+
+  // Stats bugun
+  let bugunKeldi=0,bugunKelmadi=0,bugunKech=0;
+  xodimlar.forEach(x=>{
+    const v=(xAttAll[x.id]||{})[today];
+    if(v==='k')bugunKeldi++;
+    else if(v==='km')bugunKelmadi++;
+    else if(v==='kech'||v==='juda_kech')bugunKech++;
+  });
+
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+    <div class="sbox"><div class="snum" style="color:#4ade80">${bugunKeldi}</div><div class="slbl">✅ Keldi</div></div>
+    <div class="sbox"><div class="snum" style="color:#fbbf24">${bugunKech}</div><div class="slbl">🟡 Kech</div></div>
+    <div class="sbox"><div class="snum" style="color:#f87171">${bugunKelmadi}</div><div class="slbl">❌ Kelmadi</div></div>
+  </div>`;
+
+  if(!xodimlar.length){h+=`<div class="empty"><div class="ei">👨‍💼</div>Xodimlar yo'q</div>`;pg.innerHTML=h;return;}
+
+  xodimlar.forEach(x=>{
+    const xd=xAttAll[x.id]||{};
+    const kDays=Object.values(xd).filter(v=>v==='k').length;
+    const kmDays=Object.values(xd).filter(v=>v==='km').length;
+    const kechDays=Object.values(xd).filter(v=>v==='kech').length;
+    const judaKechDays=Object.values(xd).filter(v=>v==='juda_kech').length;
+    const todayVal=xd[today];
+    const todayTime=xd[`${today}_vaqt`]||'';
+    const rc=x.role==='admin'?'#fbbf24':'#60a5fa';
+
+    // Status color
+    const statusInfo={
+      'k':{label:'✅ Keldi',color:'p-green'},
+      'kech':{label:'🟡 Kech keldi',color:''},
+      'juda_kech':{label:'🔴 Juda kech',color:'p-red'},
+      'km':{label:'❌ Kelmadi',color:'p-red'},
+    };
+    const si=statusInfo[todayVal]||{label:'—',color:'p-blue'};
+
+    let dh='';
+    for(let d=1;d<=dim();d++){
+      const v=xd[d];
+      const t=xd[`${d}_vaqt`]||'';
+      let cls='',ic='·';
+      if(v==='k'){cls='k';ic='✅';}
+      else if(v==='kech'){cls='';ic='🟡';}
+      else if(v==='juda_kech'){cls='km';ic='🔴';}
+      else if(v==='km'){cls='km';ic='❌';}
+      dh+=`<button class="dbtn ${cls}" title="${t||''}" onclick="setXodimAtt('${x.id}',${d})"><span class="dn">${d}</span><span class="di" style="font-size:10px">${ic}</span></button>`;
+    }
+
+    h+=`<div class="card">
+      <div class="card-head" onclick="togC('xd${x.id}')">
+        <div class="ava" style="background:${rc}">${(x.name||'?')[0].toUpperCase()}</div>
+        <div class="cinfo">
+          <div class="cname">${x.name}</div>
+          <div class="csub">⏰ ${x.ishBosh||'09:00'}-${x.ishTug||'18:00'} · ✅${kDays} 🟡${kechDays} 🔴${judaKechDays} ❌${kmDays}</div>
+        </div>
+        <div class="cright">
+          <span class="pill ${si.color}" style="${todayVal==='kech'?'background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)':''}">${si.label}${todayTime?' '+todayTime:''}</span>
+          <span class="arr ${openC['xd'+x.id]?'up':''}">▼</span>
+        </div>
+      </div>
+      <div class="card-body ${openC['xd'+x.id]?'on':''}">
+        <div style="padding:12px 13px">
+          <div style="margin-bottom:12px">
+            <div style="font-size:12px;color:#64748b;margin-bottom:8px">Bugun qo'lda belgilash:</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn ${todayVal==='k'?'btn-green':'btn-gray'}" style="font-size:12px" onclick="event.stopPropagation();setXodimAttManual('${x.id}',${today},'k')">✅ Keldi</button>
+              <button class="btn ${todayVal==='kech'?'btn-blue':'btn-gray'}" style="font-size:12px;background:${todayVal==='kech'?'rgba(251,191,36,.3)':''}; color:${todayVal==='kech'?'#fbbf24':''}" onclick="event.stopPropagation();setXodimAttManual('${x.id}',${today},'kech')">🟡 Kech</button>
+              <button class="btn ${todayVal==='juda_kech'?'btn-red':'btn-gray'}" style="font-size:12px" onclick="event.stopPropagation();setXodimAttManual('${x.id}',${today},'juda_kech')">🔴 Juda kech</button>
+              <button class="btn ${todayVal==='km'?'btn-red':'btn-gray'}" style="font-size:12px" onclick="event.stopPropagation();setXodimAttManual('${x.id}',${today},'km')">❌ Kelmadi</button>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#64748b;margin-bottom:8px">${mlbl()} davomati:</div>
+          <div class="dgrid">${dh}</div>
+          <div style="margin-top:9px;font-size:11px;color:#64748b">
+            ✅ <b style="color:#4ade80">${kDays}</b> &nbsp;
+            🟡 <b style="color:#fbbf24">${kechDays}</b> &nbsp;
+            🔴 <b style="color:#f87171">${judaKechDays}</b> &nbsp;
+            ❌ <b style="color:#f87171">${kmDays}</b>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  pg.innerHTML=h;
+};
+
+
+window.setXodimAtt=async function(xid,day){
+  const m=mk();
+  let xAtt={};
+  try{const snap=await getDocs(collection(db,'xodim_att_'+m));snap.forEach(d=>{if(d.id===xid)xAtt=d.data();});}catch{}
+  const cur=xAtt[day];
+  const order=['k','kech','juda_kech','km',null];
+  const idx=order.indexOf(cur);
+  const next=order[(idx+1)%order.length];
+  if(next)xAtt[day]=next;else delete xAtt[day];
+  try{await setDoc(doc(db,'xodim_att_'+m,xid),xAtt);renderXodimDavomat();}
+  catch(e){toast('❗ '+e.message);}
+};
+
+window.setXodimAttManual=async function(xid,day,val){
+  const m=mk();
+  let xAtt={};
+  try{const snap=await getDocs(collection(db,'xodim_att_'+m));snap.forEach(d=>{if(d.id===xid)xAtt=d.data();});}catch{}
+  if(xAtt[day]===val){delete xAtt[day];}
+  else{
+    xAtt[day]=val;
+    const now=new Date();
+    xAtt[`${day}_vaqt`]=now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  }
+  try{await setDoc(doc(db,'xodim_att_'+m,xid),xAtt);toast('✅ Belgilandi');renderXodimDavomat();}
+  catch(e){toast('❗ '+e.message);}
+};
+
+window.closeModal=id=>document.getElementById(id).classList.add('hide');
+document.querySelectorAll('.overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.add('hide');}));
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ════════════════════════════════════════
+// ── YUZ QO'SHISH ──
+// ════════════════════════════════════════
+let faceStream=null, faceSid=null;
+
+window.openFaceModal=async function(sid, sname){
+  faceSid=sid;
+  document.getElementById('face-modal-title').textContent=`📷 ${sname} — Yuz qo'shish`;
+  document.getElementById('face-status').textContent='Kamera ochilmoqda...';
+  document.getElementById('face-modal').classList.remove('hide');
+  try{
+    faceStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:640,height:480}});
+    document.getElementById('face-video').srcObject=faceStream;
+    document.getElementById('face-status').textContent='Yuzingizni doira ichiga joylashtiring';
+  }catch(e){
+    document.getElementById('face-status').textContent='❌ Kamera ochilmadi: '+e.message;
+  }
+};
+
+window.closeFaceModal=function(){
+  if(faceStream){faceStream.getTracks().forEach(t=>t.stop());faceStream=null;}
+  document.getElementById('face-modal').classList.add('hide');
+  faceSid=null;
+};
+
+window.openFaceModalX=async function(xid,xname){
+  faceSid='xodim_'+xid;
+  document.getElementById('face-modal-title').textContent=`📷 ${xname} — Yuz qo'shish`;
+  document.getElementById('face-status').textContent='Kamera ochilmoqda...';
+  document.getElementById('face-modal').classList.remove('hide');
+  try{
+    faceStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:640,height:480}});
+    document.getElementById('face-video').srcObject=faceStream;
+    document.getElementById('face-status').textContent='Yuzingizni doira ichiga joylashtiring';
+  }catch(e){document.getElementById('face-status').textContent='❌ Kamera ochilmadi: '+e.message;}
+};
+
+window.captureFace=async function(){
+  if(!faceSid){toast('❗ Xatolik!');return;}
+  const video=document.getElementById('face-video');
+  const canvas=document.getElementById('face-canvas');
+  canvas.width=320;canvas.height=320;
+  const ctx=canvas.getContext('2d');
+  const vw=video.videoWidth,vh=video.videoHeight;
+  const size=Math.min(vw,vh);
+  const sx=(vw-size)/2,sy=(vh-size)/2;
+  ctx.drawImage(video,sx,sy,size,size,0,0,320,320);
+  const base64=canvas.toDataURL('image/jpeg',0.8).split(',')[1];
+  document.getElementById('face-status').textContent='⏳ Saqlanmoqda...';
+  try{
+    if(faceSid.startsWith('xodim_')){
+      const xid=faceSid.replace('xodim_','');
+      await updateDoc(doc(db,'xodimlar',xid),{faceImage:base64});
+      const i=xodimlar.findIndex(x=>x.id===xid);
+      if(i>-1)xodimlar[i].faceImage=base64;
+      toast('✅ Xodim yuzi saqlandi!');
+    } else {
+      await updateDoc(doc(db,'students',faceSid),{faceImage:base64});
+      const i=students.findIndex(s=>s.id===faceSid);
+      if(i>-1)students[i].faceImage=base64;
+      toast('✅ Yuz saqlandi!');
+    }
+    closeFaceModal();render();
+  }catch(e){document.getElementById('face-status').textContent='❌ Xatolik: '+e.message;}
+};
+
+let tt;
+window.toast=msg=>{const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),2500);};
+
+// ====== TELEFON VA SUMMA FORMATLASH ======
+// Telefon: 55 010 99 66 (2-3-2-2)
+window.formatPhoneInput=function(el){
+  let digits=el.value.replace(/\D/g,'').slice(0,9);
+  let out='';
+  if(digits.length>0)out+=digits.slice(0,2);
+  if(digits.length>2)out+=' '+digits.slice(2,5);
+  if(digits.length>5)out+=' '+digits.slice(5,7);
+  if(digits.length>7)out+=' '+digits.slice(7,9);
+  el.value=out;
+};
+
+// Summa: 1 000 000 (minglik bo'yicha probel, o'ngdan chap)
+function fmtFee(digitsStr){
+  const digits=String(digitsStr).replace(/\D/g,'');
+  if(!digits)return'';
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+}
+window.formatFeeInput=function(el){
+  const digits=el.value.replace(/\D/g,'');
+  el.value=fmtFee(digits);
+};
+
+// ====== DASHBOARD ======
+let dashGrp=null;
+
+function renderDashboard(){
+  const pg=document.getElementById('pg-dashboard');
+  let myGroups=isAdmin()?groups:groups.filter(g=>{
+    const ug=Array.isArray(CU.groups)?CU.groups:(CU.group?[CU.group]:[]);
+    return ug.includes(g.name);
+  });
+  if(!myGroups.length){pg.innerHTML='<div class="empty"><div class="ei">📋</div>Guruhlar yo\'q</div>';return;}
+  if(!dashGrp||!myGroups.find(g=>g.name===dashGrp))dashGrp=myGroups[0].name;
+
+  const g=myGroups.find(x=>x.name===dashGrp)||myGroups[0];
+  const col=g?g.color:'#3b82f6';
+  const list=getGrpStudents(dashGrp);
+
+  const admin=isAdmin();
+
+  // Summary stats
+  const totalS=list.length;
+  const paidCnt=admin?list.filter(s=>isPaidFull(s.id)).length:0;
+  const unpaidCnt=admin?totalS-paidCnt:0;
+  const totalDavomat=list.reduce((a,s)=>a+cntK(s.id),0);
+  const totalFee=admin?list.reduce((a,s)=>a+getPay(s.id).paidAmount,0):0;
+  const totalDebt=admin?list.reduce((a,s)=>a+debtOf(s.id),0):0;
+
+  // Group tabs
+  let tabsH=myGroups.map(gr=>`<div class="dash-gtab${gr.name===dashGrp?' on':''}" onclick="dashSetGrp('${gr.name.replace(/'/g,"\\'")}')">
+    <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${gr.color};margin-right:5px"></span>${gr.name}
+  </div>`).join('');
+
+  // Table rows
+  let rows='';
+  list.forEach((s,i)=>{
+    const ini=s.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+    const k=cntK(s.id),km=cntKm(s.id);
+    const total=k+km;
+    const pct=total>0?Math.round(k/total*100):0;
+    const attClass=pct>=80?'good':pct>=60?'warn':'bad';
+    const full=admin?isPaidFull(s.id):null;
+    const debt=admin?debtOf(s.id):0;
+    const p=admin?getPay(s.id):null;
+    rows+=`<tr>
+      <td class="dash-num">${i+1}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:9px">
+          <div class="dash-ava" style="background:${col}">${ini}</div>
+          <div style="flex:1;min-width:0">
+            <div class="dash-name">${s.name}</div>
+            <div class="dash-phone">${s.subTime?'⏰'+s.subTime+' · ':''}${s.phone||'—'}</div>
+          </div>
+          ${admin?`<button onclick="event.stopPropagation();freezeStudent('${s.id}')" title="Muzlatish" style="border:none;background:none;cursor:pointer;font-size:15px;padding:2px 4px;flex-shrink:0">🧊</button>`:''}
+        </div>
+      </td>
+      <td class="dash-att-cell" onclick="dashToggleAtt('${s.id}')">
+        <span class="dash-att-pill ${attClass}">${k}/${total} kun</span>
+      </td>
+      ${admin?`
+      <td class="dash-pay-cell" onclick="openPayModal('${s.id}')" title="Bosib to'lov kiritish">
+        <span class="dash-pay-pill ${full?'paid':'unpaid'}">${full?"✅ To'langan":"💳 To'lash"}</span>
+        ${p&&p.date?`<div style="font-size:9px;color:#64748b;margin-top:2px">${p.date}</div>`:''}
+      </td>
+      <td class="dash-fee ${full?'paid':'unpaid'}">${debt>0?`<span style="color:#f87171">${debt.toLocaleString()}</span>`:`<span style="color:#4ade80">0</span>`}</td>
+      `:'<td colspan="2" style="text-align:center;color:#334155;font-size:11px">—</td>'}
+    </tr>`;
+  });
+
+  if(!rows)rows=`<tr><td colspan="5" style="text-align:center;padding:24px;color:#64748b">Bu guruhda o'quvchi yo'q</td></tr>`;
+
+  pg.innerHTML=`<div class="dash-wrap">
+    <div class="dash-month-bar">
+      <button class="dash-marr" onclick="dashChangeMonth(-1)">◀</button>
+      <div class="dash-mtitle">📅 ${mlbl()}</div>
+      <button class="dash-marr" onclick="dashChangeMonth(1)">▶</button>
+    </div>
+    <div class="dash-grp-tabs">${tabsH}</div>
+    <div class="dash-summary">
+      <div class="dash-sbox"><div class="dash-snum" style="color:#60a5fa">${totalS}</div><div class="dash-slbl">O'quvchi</div></div>
+      ${admin?`
+      <div class="dash-sbox"><div class="dash-snum" style="color:#4ade80">${paidCnt}</div><div class="dash-slbl">To'ladi</div></div>
+      <div class="dash-sbox"><div class="dash-snum" style="color:#f87171">${unpaidCnt}</div><div class="dash-slbl">To'lamadi</div></div>
+      `:''}
+      <div class="dash-sbox"><div class="dash-snum" style="color:#fbbf24">${totalDavomat}</div><div class="dash-slbl">Jami keldi</div></div>
+      ${admin?`<div class="dash-sbox"><div class="dash-snum" style="color:#4ade80;font-size:14px">${totalFee?totalFee.toLocaleString():0}</div><div class="dash-slbl">Yig'ilgan</div></div>
+      <div class="dash-sbox"><div class="dash-snum" style="color:#f87171;font-size:14px">${totalDebt?totalDebt.toLocaleString():0}</div><div class="dash-slbl">Qarzdorlik</div></div>`:''}
+    </div>
+    <div class="dash-table-wrap">
+      <table class="dash-table">
+        <thead><tr>
+          <th>#</th>
+          <th>Ism / Telefon</th>
+          <th class="center">Davomat</th>
+          ${admin?`<th class="center">To'lov</th><th style="text-align:right">Qarzdorlik</th>`:'<th colspan="2"></th>'}
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="font-size:11px;color:#64748b;margin-top:10px;text-align:center">
+      ${isAdmin()?'💡 To\'lov ustunini bosib summasini kiritish mumkin':''}
+    </div>
+  </div>`;
+}
+
+// MUZLATILGANLAR
+function renderFrozen(){
+  const pg=document.getElementById('pg-frozen');
+  const list=students.filter(s=>s.status==='frozen');
+  if(!list.length){pg.innerHTML='<div class="empty"><div class="ei">🧊</div>Muzlatilgan o\'quvchilar yo\'q</div>';return;}
+  let h='<div style="display:flex;flex-direction:column;gap:10px">';
+  list.forEach(s=>{
+    const ini=s.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+    h+=`<div style="background:#1e293b;border:1px solid #2d3f55;border-radius:12px;padding:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div class="ava" style="background:#3b82f6">${ini}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:14px">${s.name}</div>
+          <div style="font-size:11px;color:#94a3b8">Avvalgi guruh: ${s.group||'—'} · 📞 ${s.phone||'—'}${s.age?' · '+s.age+' yosh':''}</div>
+        </div>
+        <span class="pill" style="background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.3)">🧊 Muzlatilgan</span>
+      </div>
+      <button class="btn btn-blue btn-block" onclick="openRestoreModal('${s.id}')">♻️ Qayta tiklash</button>
+    </div>`;
+  });
+  h+='</div>';
+  pg.innerHTML=h;
+}
+
+window.freezeStudent=async function(sid){
+  if(!isAdmin())return;
+  const s=students.find(x=>x.id===sid);if(!s)return;
+  if(!confirm(`"${s.name}"ni muzlatishni tasdiqlaysizmi? U guruhda vaqtincha ko'rinmaydi va "Muzlatilganlar" bo'limiga o'tadi.`))return;
+  try{
+    await updateDoc(doc(db,'students',sid),{status:'frozen'});
+    s.status='frozen';
+    toast('🧊 Muzlatildi');
+    render();
+  }catch(e){toast('❗ '+e.message);}
+};
+
+let restoreSid=null;
+window.openRestoreModal=function(sid){
+  const s=students.find(x=>x.id===sid);if(!s)return;
+  restoreSid=sid;
+  document.getElementById('restore-title').textContent=`♻️ ${s.name} — qayta tiklash`;
+  const sel=document.getElementById('restore-group');
+  sel.innerHTML='';
+  if(!groups.length){sel.innerHTML='<option value="">— Guruh yo\'q —</option>';}
+  else groups.forEach(g=>sel.innerHTML+=`<option value="${g.name}"${g.name===s.group?' selected':''}>${g.name}</option>`);
+  document.getElementById('restore-modal').classList.remove('hide');
+};
+window.confirmRestore=async function(){
+  if(!restoreSid)return;
+  const sel=document.getElementById('restore-group');
+  const newGroup=sel.value;
+  if(!newGroup){toast('❗ Guruhni tanlang');return;}
+  try{
+    await updateDoc(doc(db,'students',restoreSid),{status:'active',group:newGroup});
+    const s=students.find(x=>x.id===restoreSid);
+    if(s){s.status='active';s.group=newGroup;}
+    toast('✅ Qayta tiklandi');
+    closeModal('restore-modal');
+    restoreSid=null;
+    render();
+  }catch(e){toast('❗ '+e.message);}
+};
+
+window.dashSetGrp=function(name){
+  dashGrp=name;
+  renderDashboard();
+};
+
+window.dashChangeMonth=async function(d){
+  cM+=d;if(cM<0){cM=11;cY--;}if(cM>11){cM=0;cY++;}
+  await loadMonth();
+  renderDashboard();
+};
+
+window.dashTogglePay=async function(sid){
+  if(!isAdmin())return;
+  const p=getPay(sid);
+  const s=students.find(x=>x.id===sid);
+  const newPaid=!p.paid;
+  const m=mk();
+  try{
+    await setDoc(doc(db,'pay_'+m,sid),{
+      paid:newPaid,
+      date:newPaid?new Date().toLocaleDateString('uz-UZ'):'',
+      amount:newPaid?(s?s.fee||0:0):0,
+      note:p.note||''
+    });
+    pay[sid]={paid:newPaid,date:newPaid?new Date().toLocaleDateString('uz-UZ'):'',amount:newPaid?(s?s.fee||0:0):0,note:p.note||''};
+    toast(newPaid?"✅ To'ladi deb belgilandi":"❌ Bekor qilindi");
+    renderDashboard();
+  }catch(e){toast('❗ Xatolik: '+e.message);}
+};
+
+window.dashToggleAtt=function(sid){
+  // Davomat uchun bugungi kunga tez o'zgartirish
+  const today=new Date().getDate();
+  const curM=mk();
+  if(mk()!==curM){toast('⚠️ Joriy oy emas, o\'zgartirib bo\'lmaydi');return;}
+  const cur=getA(sid,today);
+  const nv=cur==='k'?'km':cur==='km'?null:'k';
+  setAttDirect(sid,today,nv||null);
+  setTimeout(()=>renderDashboard(),300);
+};
+
+// ====== DARS JADVALI ======
+let djTeacher=null,djTimerHandle=null;
+const KUN_ORDER=['Du','Se','Ch','Pa','Ju','Sh','Ya'];
+const KUN_NOMI_LONG={Du:'Dushanba',Se:'Seshanba',Ch:'Chorshanba',Pa:'Payshanba',Ju:'Juma',Sh:'Shanba',Ya:'Yakshanba'};
+const KUN_QISQA_BUGUN=['Ya','Du','Se','Ch','Pa','Ju','Sh']; // JS getDay() index uchun: 0=Yakshanba
+
+function djTeacherList(){
+  // Har bir guruhning teacher maydonidan unikal ustozlar ro'yxati
+  const set=new Set();
+  groups.forEach(g=>{if(g.teacher)set.add(g.teacher);});
+  xodimlar.forEach(x=>{if(x.role!=='admin'&&x.name)set.add(x.name);});
+  return Array.from(set);
+}
+
+function djGroupsForTeacher(teacherName){
+  return groups.filter(g=>g.teacher===teacherName).map(g=>g.name);
+}
+
+function djLessonsForGroups(groupNames){
+  return jadvallar.filter(j=>groupNames.includes(j.guruhNom));
+}
+
+async function renderDarsJadval(){
+  if(!xonalar.length&&!jadvallar.length)await loadXonalar();
+  if(djTimerHandle){clearInterval(djTimerHandle);djTimerHandle=null;}
+  const pg=document.getElementById('pg-darsjadval');
+
+  let teachers=djTeacherList();
+  let isTeacherUser=!isAdmin();
+  let myTeacherName=null;
+  if(isTeacherUser){
+    // Ustoz o'z ismi bilan kirgan, CU.name orqali aniqlaymiz
+    myTeacherName=CU.name;
+    if(!teachers.includes(myTeacherName))teachers=[myTeacherName,...teachers];
+    djTeacher=myTeacherName;
+  } else {
+    if(!djTeacher||!teachers.includes(djTeacher))djTeacher=teachers[0]||null;
+  }
+
+  if(!teachers.length){
+    pg.innerHTML='<div class="empty"><div class="ei">📅</div>Hali ustoz/guruh biriktirilmagan</div>';
+    return;
+  }
+
+  let tabsH='';
+  if(!isTeacherUser){
+    tabsH=`<div class="dj-teacher-tabs">${teachers.map(t=>`<div class="dj-ttab${t===djTeacher?' on':''}" onclick="djSetTeacher('${t.replace(/'/g,"\\'")}')">👨‍🏫 ${t}</div>`).join('')}</div>`;
+  }
+
+  const myGroupNames=djGroupsForTeacher(djTeacher);
+  const myLessons=djLessonsForGroups(myGroupNames);
+
+  pg.innerHTML=`<div id="dj-live-box"></div>${tabsH}<div id="dj-grid-box"></div>`;
+
+  function paint(){
+    document.getElementById('dj-live-box').innerHTML=djLiveStatusHtml(myLessons);
+    document.getElementById('dj-grid-box').innerHTML=djWeekGridHtml(myLessons);
+  }
+  paint();
+  djTimerHandle=setInterval(paint,1000*15); // har 15 soniyada yangilanadi
+}
+
+window.djSetTeacher=function(name){djTeacher=name;renderDarsJadval();};
+
+function djNowMinutes(){const n=new Date();return n.getHours()*60+n.getMinutes();}
+function djTodayKey(){return KUN_QISQA_BUGUN[new Date().getDay()];}
+
+function djLiveStatusHtml(lessons){
+  const todayKey=djTodayKey();
+  const todays=lessons.filter(j=>Array.isArray(j.kunlar)&&j.kunlar.includes(todayKey))
+    .map(j=>{
+      const[bH,bM]=(j.boshlanish||'00:00').split(':').map(Number);
+      const[tH,tM]=(j.tugash||'00:00').split(':').map(Number);
+      return{...j,bMin:bH*60+bM,tMin:tH*60+tM};
+    })
+    .sort((a,b)=>a.bMin-b.bMin);
+
+  const nowMin=djNowMinutes();
+  const active=todays.find(j=>nowMin>=j.bMin&&nowMin<j.tMin);
+  if(active){
+    const left=active.tMin-nowMin;
+    const hh=Math.floor(left/60),mm=left%60;
+    const leftStr=hh>0?`${hh} soat ${mm} daqiqa`:`${mm} daqiqa`;
+    return`<div class="dj-live active">
+      <div class="dj-live-title">🟢 ${active.guruhNom} darsidasiz</div>
+      <div class="dj-live-sub">⏰ ${active.boshlanish} - ${active.tugash} ${active.xonaNom?'· 🚪 '+active.xonaNom:''}</div>
+      <div class="dj-live-time">Tugashiga ${leftStr} qoldi</div>
+    </div>`;
+  }
+
+  const next=todays.find(j=>j.bMin>nowMin);
+  if(next){
+    const left=next.bMin-nowMin;
+    const hh=Math.floor(left/60),mm=left%60;
+    const leftStr=hh>0?`${hh} soat ${mm} daqiqa`:`${mm} daqiqa`;
+    return`<div class="dj-live wait">
+      <div class="dj-live-title">⏳ Keyingi dars: ${next.guruhNom}</div>
+      <div class="dj-live-sub">⏰ ${next.boshlanish} - ${next.tugash} ${next.xonaNom?'· 🚪 '+next.xonaNom:''}</div>
+      <div class="dj-live-time">${leftStr}dan keyin boshlanadi</div>
+    </div>`;
+  }
+
+  return`<div class="dj-live idle">
+    <div class="dj-live-title">✅ Bugungi darslar tugadi</div>
+    <div class="dj-live-sub">${todays.length?'Boshqa rejalashtirilgan dars yo\'q':'Bugun darsingiz yo\'q'}</div>
+  </div>`;
+}
+
+function djWeekGridHtml(lessons){
+  if(!lessons.length){
+    return'<div class="empty"><div class="ei">📅</div>Bu ustozga dars biriktirilmagan</div>';
+  }
+  // Vaqt oralig'ini darslar asosida hisoblash (8:00-21:00 standart)
+  let minStart=8*60,maxEnd=21*60;
+  lessons.forEach(j=>{
+    const[bH,bM]=(j.boshlanish||'08:00').split(':').map(Number);
+    const[tH,tM]=(j.tugash||'21:00').split(':').map(Number);
+    minStart=Math.min(minStart,bH*60+bM);
+    maxEnd=Math.max(maxEnd,tH*60+tM);
+  });
+  const startHour=Math.floor(minStart/60),endHour=Math.ceil(maxEnd/60);
+  const hours=[];for(let h=startHour;h<endHour;h++)hours.push(h);
+
+  function getHalf(dayKey,hour,half){
+    const segStart=hour*60+half*30,segEnd=segStart+30;
+    return lessons.find(j=>{
+      if(!Array.isArray(j.kunlar)||!j.kunlar.includes(dayKey))return false;
+      const[bH,bM]=(j.boshlanish||'00:00').split(':').map(Number);
+      const[tH,tM]=(j.tugash||'00:00').split(':').map(Number);
+      const jb=bH*60+bM,jt=tH*60+tM;
+      return jb<segEnd&&jt>segStart;
+    });
+  }
+
+  let th=`<th class="xroom-h">Kun</th>`;
+  hours.forEach(hh=>th+=`<th><span class="xtime-lbl">${hh}:00</span></th>`);
+
+  let trows='';
+  KUN_ORDER.forEach(dk=>{
+    let row=`<tr><td class="xroom-c">${KUN_NOMI[dk]}</td>`;
+    hours.forEach(hh=>{
+      const l1=getHalf(dk,hh,0);
+      const l2=getHalf(dk,hh,1);
+      const sameLesson=l1&&l2&&l1.id===l2.id;
+      if(sameLesson){
+        row+=`<td><div class="dj-cell-content" style="background:rgba(59,130,246,.45)">
+          <div>${l1.guruhNom}</div><div class="djtime">${l1.boshlanish}-${l1.tugash}</div>
+        </div></td>`;
+      } else {
+        row+=`<td><div class="xcell">
+          <div class="xcell-half" style="background:${l1?'rgba(59,130,246,.45)':'rgba(34,197,94,.2)'};display:flex;align-items:center;justify-content:center">${l1?`<span style="font-size:8px;color:#fff;font-weight:700">${l1.guruhNom.slice(0,6)}</span>`:''}</div>
+          <div class="xcell-half" style="background:${l2?'rgba(59,130,246,.45)':'rgba(34,197,94,.2)'};display:flex;align-items:center;justify-content:center">${l2?`<span style="font-size:8px;color:#fff;font-weight:700">${l2.guruhNom.slice(0,6)}</span>`:''}</div>
+        </div></td>`;
+      }
+    });
+    row+='</tr>';
+    trows+=row;
+  });
+
+  return`<div class="xsheet-wrap"><table class="xsheet"><thead><tr>${th}</tr></thead><tbody>${trows}</tbody></table></div>
+  <div class="xsheet-legend">
+    <span><i style="background:rgba(34,197,94,.4)"></i>Bo'sh</span>
+    <span><i style="background:rgba(59,130,246,.6)"></i>Dars bor</span>
+  </div>`;
+}
+</script>
+</body>
+</html>
